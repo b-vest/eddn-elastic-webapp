@@ -2,7 +2,7 @@
 
 This project focuses on building an EDDN Datastream application that harnesses the power of real-time data updates from the EDDN (Elite Dangerous Data Network). The point of this project is not so much about an addon to the game but more about working with a realtime dataset that is rich with data types. 
 
-By leveraging technologies such as Elasticsearch, Node.js, and WebSockets, this application enables efficient data indexing, server-side development, and real-time communication. The integration of the EDDN feed allows for continuous data updates, providing users with the latest game information.
+By leveraging technologies such as Elasticsearch, Node.js, and WebSockets, this application enables efficient data indexing, server-side development, and real-time communication.
 
 The guide covers the installation and setup of Elasticsearch and Node.js, along with server configuration and WebSocket establishment. It also delves into real-time data processing, indexing, and searching using Elasticsearch. Engaging user experiences are created through visualizations powered by libraries such as D3.js and Three.js.
 
