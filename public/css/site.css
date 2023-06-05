@@ -8,6 +8,10 @@ p {
   background-color: #333;
   overflow: hidden;
 }
+.container {
+  width: 95%;
+  max-width:1600px;
+}
 
 .topnav a {
   float: left;

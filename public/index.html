@@ -10,13 +10,14 @@
 </head>
 <body>
 
-<div class="allContent" style="max-width: 90%; margin:auto;">
+<div class="allContent" style="max-width: 95%; margin:auto;">
 <div class="topnav" id="myTopnav">
   <a href="#home" class="active">Home</a>
   <a href="#news">2D Stats</a>
   <a href="#contact">3D Maps</a>
   <a href="#about">Raw Data</a>
   <a href="#about">Host Stats</a>
+  <a id="nodeStatus">Updating</a>
 
   <a href="javascript:void(0);" class="icon" onclick="responsive()">
     <i class="fa fa-bars"></i>
@@ -24,7 +25,11 @@
 </div><!--End Nav-->
     <div class="container">
       <div class="row">
-        <div class="col-12">
+        <div id="nodeStatusCol" class="col-3">
+
+        </div>
+
+        <div class="col-9">
           <h2>EDDN To Elasticsearch To Node WebApp Project</h2>
           <p>In this tutorial, I'll show you how to use Elasticsearch, Node.js, WebSockets, and the EDDN feed to build a dynamic web application that brings the world of Elite Dangerous to life. By leveraging Elasticsearch as the data indexing and search engine, Node.js for server-side development, and WebSockets for real-time communication, we can create a powerful and responsive application.</p>
 

@@ -10,6 +10,21 @@ socket.addEventListener('open', function (event) {
 // Listen for messages from the server
 socket.addEventListener('message', function (event) {
   console.log('Message from server:', event.data);
+  var table = document.createElement('table');
+const jsonData = JSON.parse(event.data);
+const healthData = jsonData.health;
+for (const key in healthData) {
+  const row = table.insertRow();
+  const cell1 = row.insertCell();
+  const cell2 = row.insertCell();
+  cell1.textContent = key;
+  cell2.textContent = healthData[key];
+  console.log(key);
+}
+
+const nodeStatusCol = document.getElementById('nodeStatusCol');
+nodeStatusCol.innerHTML = "";
+nodeStatusCol.appendChild(table);
 });
 
 // Connection closed
