@@ -2,7 +2,7 @@
 //Key List for Cluster Health Items to Print
 const healthKey = {
 	cluster_name: "Cluster Name",
-	status: "Overall Statys",
+	status: "Overall Status",
 	number_of_nodes: "# Nodes",
 	number_of_data_nodes: "# Data Nodes",
 	unassigned_shards: "# Unassigned",
