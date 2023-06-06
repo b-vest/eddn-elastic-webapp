@@ -80,11 +80,11 @@ function broadcastData(data) {
   });
 }
 
-async function getRawData(){
+async function getRawData(body,size){
 	try{
 		const rawData = await esClient.search({
   			index: 'stellar_body_index',
-  			size: '100'
+  			size: size
 		});
 		return rawData.body;
 
@@ -101,11 +101,64 @@ async function fetchAndStore() {
   if (healthStatus) {
   	runtimeObject['health'] = healthStatus;
   }
-  runtimeObject['rawData'] = await getRawData();
+  runtimeObject['rawData'] = await getRawData("",100);
   //console.log(rawData.hits);
 
   
 }
+
+
+async function getEventLineGraph(){
+	const lineQuery =	{
+  		"aggs": {
+    		"Timestamp": {
+      			"date_histogram": {
+        			"field": "timestamp",
+        			"calendar_interval": "1m",
+        			"time_zone": "America/New_York",
+        			"min_doc_count": 1
+      			},
+      			"aggs": {
+        			"Event": {
+          				"terms": {
+            				"field": "event",
+            				"order": {
+              					"_count": "desc"
+            				},
+            				"size": 5
+          				}
+      				}
+      			}
+    		}
+  		},
+  		"size": 0,
+  		"script_fields": {},
+  		"stored_fields": [
+    		"*"
+  		],
+  		"runtime_mappings": {},
+  		"query": {
+    		"bool": {
+      			"must": [],
+      			"filter": [
+      				{
+          				"range": {
+            				"timestamp": {
+              					"format": "strict_date_optional_time",
+              					"gte": "now-1h/h",
+              					"lte": "now/h"
+            				}
+          				}
+        			}
+      			],
+      			"should": [],
+      			"must_not": []
+    		}
+  		}
+	}
+};
+
+
 
 // Schedule the function to run every 5 seconds
 setInterval(fetchAndStore, 5000);
