@@ -42,7 +42,7 @@ wss.on('connection', (ws) => {
   });
 
   // Send WebSocket messages
-  ws.send('Connected to WebSocket server');
+  //ws.send('Connected to WebSocket server');
 });
 
 // Start the server

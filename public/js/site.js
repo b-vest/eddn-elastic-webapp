@@ -28,8 +28,13 @@ socket.addEventListener('open', function (event) {
 
 // Listen for messages from the server
 socket.addEventListener('message', function (event) {
-  console.log('Message from server:', event.data);
-  
+  //console.log('Message from server:', event.data);
+  const serverData = JSON.parse(event.data);
+  console.log(serverData);
+  if(serverData.function === "renderHealth"){
+  	console.log("Redner Health Table");
+  	updateHealthTable(serverData.health)
+  }
 });
 
 // Connection closed
@@ -47,27 +52,23 @@ function responsive() {
   }
 }
 
-function updateHealthTable() {
+function updateHealthTable(healthData) {
 	 var table = document.createElement('table');
-const jsonData = JSON.parse(event.data);
-const healthData = jsonData.health;
-for (const key in healthData) {
-	if(healthKey[key]){
-  		const row = table.insertRow();
-  		const cell1 = row.insertCell();
-  		const cell2 = row.insertCell();
-  		cell1.textContent = healthKey[key];
-  		cell2.textContent = healthData[key];
-  		console.log(key);
-  	}
-}
-d = new Date();
+	for (const key in healthData) {
+		if(healthKey[key]){
+  			const row = table.insertRow();
+  			const cell1 = row.insertCell();
+  			const cell2 = row.insertCell();
+  			cell1.textContent = healthKey[key];
+  			cell2.textContent = healthData[key];
+  			console.log(key);
+  		}
+	}
+	d = new Date();
 
-
-
-const nodeStatusCol = document.getElementById('nodeStatusCol');
-nodeStatusCol.innerHTML = "";
-nodeStatusCol.appendChild(table);
-nodeStatusCol.innerHTML += "<p>"+d.toLocaleString()+"<\p>";
+	const nodeStatusCol = document.getElementById('nodeStatusCol');
+	nodeStatusCol.innerHTML = "";
+	nodeStatusCol.appendChild(table);
+	nodeStatusCol.innerHTML += "<p>"+d.toLocaleString()+"<\p>";
 
 }
