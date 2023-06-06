@@ -20,13 +20,35 @@ const socket = new WebSocket('ws://172.16.1.252:3000', ['x-client-script', 'site
 socket.addEventListener('open', function (event) {
   console.log('WebSocket connected');
   // You can send data to the server using socket.send()
-  socket.send('Hello Server!');
+  var sendToServer = {
+  	function:"sendHealth"
+  }
+  socket.send(JSON.stringify(sendToServer));
 });
 
 // Listen for messages from the server
 socket.addEventListener('message', function (event) {
   console.log('Message from server:', event.data);
-  var table = document.createElement('table');
+  
+});
+
+// Connection closed
+socket.addEventListener('close', function (event) {
+  console.log('WebSocket connection closed');
+});
+
+
+function responsive() {
+  var x = document.getElementById("myTopnav");
+  if (x.className === "topnav") {
+    x.className += " responsive";
+  } else {
+    x.className = "topnav";
+  }
+}
+
+function updateHealthTable() {
+	 var table = document.createElement('table');
 const jsonData = JSON.parse(event.data);
 const healthData = jsonData.health;
 for (const key in healthData) {
@@ -47,19 +69,5 @@ const nodeStatusCol = document.getElementById('nodeStatusCol');
 nodeStatusCol.innerHTML = "";
 nodeStatusCol.appendChild(table);
 nodeStatusCol.innerHTML += "<p>"+d.toLocaleString()+"<\p>";
-});
 
-// Connection closed
-socket.addEventListener('close', function (event) {
-  console.log('WebSocket connection closed');
-});
-
-
-function responsive() {
-  var x = document.getElementById("myTopnav");
-  if (x.className === "topnav") {
-    x.className += " responsive";
-  } else {
-    x.className = "topnav";
-  }
 }

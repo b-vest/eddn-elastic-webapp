@@ -13,6 +13,12 @@ const esClient = new Client({
   auth: null, // No authentication required
 });
 
+//In this version of the script we will store cache data in a global variable
+var runtimeObject = {
+	health: {}
+};
+
+fetchHealthAndStore();
 
 // Serve static files
 app.use(express.static('public'));
@@ -23,6 +29,16 @@ wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     // Process WebSocket messages
     console.log(`Received message: ${message}`);
+    const fromClient = JSON.parse(message);
+    console.log(fromClient);
+    console.log(runtimeObject);
+    if(fromClient.function === "sendHealth"){
+    	const sendObject = {
+    		function: "renderHealth",
+    		health: runtimeObject.health
+    	}
+    	ws.send(JSON.stringify(sendObject));
+    }
   });
 
   // Send WebSocket messages
@@ -58,14 +74,15 @@ function broadcastData(data) {
 }
 
 // Function to continuously fetch Elasticsearch health status and broadcast to WebSocket clients
-async function fetchHealthAndBroadcast() {
+async function fetchHealthAndStore() {
   const healthStatus = await getClusterHealth();
   if (healthStatus) {
   	//Prcess Data for Print
-
-    broadcastData({ health: healthStatus });
+    //broadcastData({ health: healthStatus });
+  	runtimeObject['health'] = healthStatus;
+  	//console.log(runtimeObject);
   }
 }
 
 // Schedule the function to run every 5 seconds
-setInterval(fetchHealthAndBroadcast, 5000);
+setInterval(fetchHealthAndStore, 5000);
