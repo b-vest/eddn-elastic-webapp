@@ -18,7 +18,7 @@ var runtimeObject = {
 	health: {}
 };
 
-fetchHealthAndStore();
+fetchAndStore();
 
 // Serve static files
 app.use(express.static('public'));
@@ -36,6 +36,13 @@ wss.on('connection', (ws) => {
     	const sendObject = {
     		function: "renderHealth",
     		health: runtimeObject.health
+    	}
+    	ws.send(JSON.stringify(sendObject));
+    }
+    if(fromClient.function === "sendRawData"){
+    	const sendObject = {
+    		function: "renderRawData",
+    		rawData: runtimeObject.rawData
     	}
     	ws.send(JSON.stringify(sendObject));
     }
@@ -73,16 +80,32 @@ function broadcastData(data) {
   });
 }
 
+async function getRawData(){
+	try{
+		const rawData = await esClient.search({
+  			index: 'stellar_body_index',
+  			size: '100'
+		});
+		return rawData.body;
+
+	} catch(error){
+		console.log(error)
+	}
+	return;
+}
+
 // Function to continuously fetch Elasticsearch health status and broadcast to WebSocket clients
-async function fetchHealthAndStore() {
+async function fetchAndStore() {
+	console.log("Running Fetch and Store")
   const healthStatus = await getClusterHealth();
   if (healthStatus) {
-  	//Prcess Data for Print
-    //broadcastData({ health: healthStatus });
   	runtimeObject['health'] = healthStatus;
-  	//console.log(runtimeObject);
   }
+  runtimeObject['rawData'] = await getRawData();
+  //console.log(rawData.hits);
+
+  
 }
 
 // Schedule the function to run every 5 seconds
-setInterval(fetchHealthAndStore, 5000);
+setInterval(fetchAndStore, 5000);
