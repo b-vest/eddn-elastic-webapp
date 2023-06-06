@@ -9,7 +9,12 @@ const healthKey = {
 	number_of_pending_tasks: "# Pending Tasks"
 }
 
-const socket = new WebSocket('ws://172.16.1.252:3000');
+
+var path = window.location.pathname;
+var page = path.split("/").pop();
+console.log(page);
+
+const socket = new WebSocket('ws://172.16.1.252:3000', ['x-client-script', 'site.js']);
 
 // Connection opened
 socket.addEventListener('open', function (event) {

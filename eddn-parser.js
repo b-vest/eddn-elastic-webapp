@@ -18,8 +18,6 @@ async function run() {
   for await (const [src] of sock) {
     const msg = JSON.parse(zlib.inflateSync(src));
     if(msg.message.event === "Scan" || msg.message.event === "FSDJump"){
-      //We need to clean up the message a bit
-      //We need to extract the star
       //console.log(JSON.stringify(msg.message));
       ingestDocument("stellar_body_index", msg.message);
     }

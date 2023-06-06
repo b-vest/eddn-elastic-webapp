@@ -51,6 +51,7 @@ async function getClusterHealth() {
 function broadcastData(data) {
   wss.clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
+
       client.send(JSON.stringify(data));
     }
   });
@@ -60,6 +61,8 @@ function broadcastData(data) {
 async function fetchHealthAndBroadcast() {
   const healthStatus = await getClusterHealth();
   if (healthStatus) {
+  	//Prcess Data for Print
+
     broadcastData({ health: healthStatus });
   }
 }
