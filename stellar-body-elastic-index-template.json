@@ -1,0 +1,50 @@
+{
+  "order": 0,
+  "index_patterns": ["stellar_body_index"],
+  "settings": {
+    "index": {
+      "number_of_shards": "1",
+      "number_of_replicas": "0"
+    }
+  },
+  "aliases": {},
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "SystemAddress": { "type": "long" },
+        "AxialTilt": { "type": "double" },
+        "Radius": { "type": "double" },
+        "OrbitalPeriod": { "type": "double" },
+        "Subclass": { "type": "long" },
+        "Eccentricity": { "type": "double" },
+        "StarType": { "type": "keyword" },
+        "Parents": { "type": "nested" },
+        "Luminosity": { "type": "keyword" },
+        "Age_MY": { "type": "long" },
+        "OrbitalInclination": { "type": "double" },
+        "RotationPeriod": { "type": "double" },
+        "DistanceFromArrivalLS": { "type": "double" },
+        "odyssey": { "type": "boolean" },
+        "SemiMajorAxis": { "type": "double" },
+        "SurfaceTemperature": { "type": "long" },
+        "AscendingNode": { "type": "double" },
+        "event": { "type": "keyword" },
+        "WasDiscovered": { "type": "boolean" },
+        "timestamp": { "type": "date" },
+        "StarSystem": { "type": "keyword" },
+        "WasMapped": { "type": "boolean" },
+        "horizons": { "type": "boolean" },
+        "ScanType": { "type": "keyword" },
+        "MeanAnomaly": { "type": "double" },
+        "StellarMass": { "type": "double" },
+        "BodyID": { "type": "long" },
+        "AbsoluteMagnitude": { "type": "double" },
+        "Periapsis": { "type": "double" },
+        "starPos_y": { "type": "double" },
+        "starPos_z": { "type": "double" },
+        "starPos_x": { "type": "double" },
+        "BodyName": { "type": "text" }
+      }
+    }
+  }
+}

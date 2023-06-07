@@ -12,6 +12,9 @@ network.host: localhost"| sudo tee /etc/elasticsearch/elasticsearch.yml
 
 sudo service elasticsearch restart
 
+curl -XPUT "http://localhost:9200/_template/stellar_body_template?include_type_name" -H 'Content-Type: application/json' -d @template.json
+
+
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
 sudo apt-get install -y nodejs
 sudo npm install -g pm2
