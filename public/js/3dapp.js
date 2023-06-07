@@ -37,7 +37,7 @@ const conf = {
 
   initScene()
 
-const socket = new WebSocket('ws://172.16.1.252:3000');
+const socket = new WebSocket('ws://'+window.location.hostname+':3000');
 
 // Connection opened
 socket.addEventListener('open', function (event) {

@@ -14,7 +14,7 @@ var path = window.location.pathname;
 var page = path.split("/").pop();
 console.log(page);
 
-const socket = new WebSocket('ws://172.16.1.252:3000', ['x-client-script', 'site.js']);
+const socket = new WebSocket('ws://'+window.location.hostname+':3000');
 
 // Connection opened
 socket.addEventListener('open', function (event) {

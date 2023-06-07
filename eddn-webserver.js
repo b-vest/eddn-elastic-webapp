@@ -166,7 +166,7 @@ async function getStarMap(){
       "format": "strict_date_optional_time"
     }
   ],
-  "size": 5000,
+  "size": 9000,
   "version": true,
   "script_fields": {},
   "stored_fields": [
