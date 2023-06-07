@@ -22,12 +22,15 @@ socket.addEventListener('message', function (event) {
   if(serverData.function === "renderRawData"){
     renderRawDataTable(serverData.rawData.hits.hits);
   }
+
 });
 
 // Connection closed
 socket.addEventListener('close', function (event) {
   console.log('WebSocket connection closed');
 });
+
+
 
 
 function renderRawDataTable(tableData){

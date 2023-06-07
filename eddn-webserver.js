@@ -46,6 +46,13 @@ wss.on('connection', (ws) => {
     	}
     	ws.send(JSON.stringify(sendObject));
     }
+    if(fromClient.function === "sendEventHistogram"){
+    	const sendObject = {
+    		function: "renderEventHistogram",
+    		lineGraphData: runtimeObject.eventLineHistogram
+    	}
+    	ws.send(JSON.stringify(sendObject));
+    }
   });
 
   // Send WebSocket messages
@@ -103,13 +110,15 @@ async function fetchAndStore() {
   }
   runtimeObject['rawData'] = await getRawData("",100);
   //console.log(rawData.hits);
-
-  
+  runtimeObject["eventLineHistogram"] = await getEventLineGraph();
+  console.log(runtimeObject);
 }
 
 
 async function getEventLineGraph(){
 	const lineQuery =	{
+		"index": 'stellar_body_index',
+		"body":{
   		"aggs": {
     		"Timestamp": {
       			"date_histogram": {
@@ -158,6 +167,20 @@ async function getEventLineGraph(){
 	}
 };
 
+
+console.log(lineQuery);
+
+	try{
+		const rawData = await esClient.search(
+  			lineQuery
+		);
+		return rawData.body;
+
+	} catch(error){
+		console.log(error)
+	}
+	return;
+}
 
 
 // Schedule the function to run every 5 seconds
