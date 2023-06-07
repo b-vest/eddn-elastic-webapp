@@ -31,7 +31,7 @@ wss.on('connection', (ws) => {
     console.log(`Received message: ${message}`);
     const fromClient = JSON.parse(message);
     console.log(fromClient);
-    console.log(runtimeObject);
+    //console.log(runtimeObject);
     if(fromClient.function === "sendHealth"){
     	const sendObject = {
     		function: "renderHealth",
@@ -50,6 +50,13 @@ wss.on('connection', (ws) => {
     	const sendObject = {
     		function: "renderEventHistogram",
     		lineGraphData: runtimeObject.eventLineHistogram
+    	}
+    	ws.send(JSON.stringify(sendObject));
+    }
+    if(fromClient.function === "bootstrapStarMap"){
+    	const sendObject = {
+    		function: "renderStarMap",
+    		starMapData: runtimeObject.starMapData
     	}
     	ws.send(JSON.stringify(sendObject));
     }
@@ -112,10 +119,29 @@ async function fetchAndStore() {
   //console.log(rawData.hits);
   runtimeObject["eventLineHistogram"] = await getEventLineGraph();
 
-  runtimeObject["starMap"] = await getStarMap();
-  console.log(runtimeObject);
+  const starMapRawData = await getStarMap();
+  runtimeObject["starMapData"] = processStarMap(starMapRawData.hits.hits); 
+  //console.log(runtimeObject);
 }
 
+
+
+function processStarMap(starMapData){
+
+	var processedData = [];
+
+	for (const key in starMapData) {
+		//console.log(starMapData[key]);
+		const thisStar = {
+			starPosition: starMapData[key].fields.StarPos,
+			surfaceTemp: starMapData[key].fields.SurfaceTemperature[0],
+			starRadius: starMapData[key].fields.Radius[0],
+		}
+		processedData.push(thisStar);
+	}
+	return processedData;
+
+}
 
 async function getStarMap(){
 	const starQuery = {

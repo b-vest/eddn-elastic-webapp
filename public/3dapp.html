@@ -25,13 +25,47 @@
 </div><!--End Nav-->
     <div class="container">
       <div class="row">
-        
+              <canvas class="canvas" id="edJumpStars">
+      </canvas>
 
       </div>
     </div>
 </div>
+    <script type="x-shader/x-fragment" id="fragmentshader">
 
- <script src="./js/3dapp.js"></script> 
+      uniform sampler2D pointTexture;
+
+      varying vec3 vColor;
+
+      void main() {
+
+        gl_FragColor = vec4( vColor, 1.0 );
+
+        gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );
+
+      }
+
+    </script>
+    <script type="x-shader/x-vertex" id="vertexshader">
+
+      attribute float size;
+
+      varying vec3 vColor;
+
+      void main() {
+
+        vColor = color;
+
+        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+        gl_PointSize = size * ( 300.0 / -mvPosition.z );
+
+        gl_Position = projectionMatrix * mvPosition;
+
+      }
+
+    </script>
+ <script type="module" src="./js/3dapp.js"></script> 
 
 </body>
 </html>
