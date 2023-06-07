@@ -43,9 +43,11 @@ function renderEventHistogram(histogramData) {
   const timestamps = [];
 
   for (const bucket of histogramData.Timestamp.buckets) {
-    const timestamp = new Date(bucket.key_as_string);
-    const timestampValue = timestamp.getTime();
-    timestamps.push(timestampValue);
+
+    //const timestamp = new Date(bucket.key_as_string);
+    const timestampValue = bucket.key_as_string;
+    console.log(bucket);
+    timestamps.push(bucket.key_as_string);
 
     for (const eventBucket of bucket.Event.buckets) {
       const eventName = eventBucket.key;
@@ -89,6 +91,12 @@ legendItems.append("rect")
   .attr("width", 10)
   .attr("height", 10)
   .style("fill", (d) => (d === "FSDJump" ? "blue" : "green"));
+
+  legendItems.append("text")
+  .data(timestamps)
+  .enter()
+  .append("g")
+  .attr("transform", (d, i) => `translate(0, ${i * 20})`);
 
 // Add text labels to the legend
 legendItems.append("text")

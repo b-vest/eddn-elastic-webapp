@@ -111,7 +111,107 @@ async function fetchAndStore() {
   runtimeObject['rawData'] = await getRawData("",100);
   //console.log(rawData.hits);
   runtimeObject["eventLineHistogram"] = await getEventLineGraph();
+
+  runtimeObject["starMap"] = await getStarMap();
   console.log(runtimeObject);
+}
+
+
+async function getStarMap(){
+	const starQuery = {
+		"index": 'stellar_body_index',
+		"body":{
+  "track_total_hits": false,
+  "sort": [
+    {
+      "timestamp": {
+        "order": "desc",
+        "unmapped_type": "boolean"
+      }
+    }
+  ],
+  "fields": [
+    {
+      "field": "*",
+      "include_unmapped": "true"
+    },
+    {
+      "field": "timestamp",
+      "format": "strict_date_optional_time"
+    }
+  ],
+  "size": 5000,
+  "version": true,
+  "script_fields": {},
+  "stored_fields": [
+    "*"
+  ],
+  "runtime_mappings": {},
+  "_source": false,
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [
+        {
+          "bool": {
+            "filter": [
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "match": {
+                        "event": "Scan"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              },
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "exists": {
+                        "field": "StarType"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              },
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "match": {
+                        "DistanceFromArrivalLS": "0.0"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "should": [],
+      "must_not": []
+    }
+  }
+}
+};
+	try{
+		const rawData = await esClient.search(
+  			starQuery
+		);
+		return rawData.body;
+
+	} catch(error){
+		console.log(error)
+	}
+	return;
+
 }
 
 
