@@ -39,9 +39,7 @@ network.host: localhost" | sudo tee /etc/elasticsearch/elasticsearch.yml
 echo "Starting Elasticsearch"
 sudo service elasticsearch restart
 echo "Elasticsearch Started"
-echo "Installing NPM modules"
 cd ~/eddn-elastic-webapp
-npm install 
 echo "Setting Elasticsearch index template"
 curl -XPUT "http://localhost:9200/_template/stellar_body_template?include_type_name" -H 'Content-Type: application/json' -d @./stellar-body-elastic-index-template.json
 echo "Installing NodeJS"
@@ -49,6 +47,8 @@ curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
 sudo apt-get install -y nodejs
 echo "Installing PM2"
 sudo npm install -g pm2
+echo "Installing NPM modules"
+npm install 
 echo "Starting EDDN parser"
 pm2 start ~/eddn-elastic-webapp/eddn-parser.js
 echo "Starting Web and Socket Server"
