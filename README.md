@@ -14,7 +14,7 @@ As of 06/08/2023 this project is online and browsable at [https://eddnapp.bareme
 
 
 ## Quick Install
-This is designed to work on Ubunut 22.04. It should work on other Debian based distros but I have only tested this on Ubuntu 22.04.
+This is designed to work on Ubunutu 22.04. It should work on other Debian based distros but I have only tested this on Ubuntu 22.04.
 
 To get this going quickly run all of the commands below.
 
@@ -66,3 +66,23 @@ The 2D graph on the main page, as well as the raw data section, should start pop
 However, the 3D star map, one of the more visually captivating features of this application, might not show much data at first. Given its complex nature and the depth of data it represents, it will require a more substantial data input to start revealing significant patterns. So, don't be discouraged if you're only seeing a minimal number of stars displayed. The data input from the EDDN feed is continual, and as more data is collected and processed, the 3D star map will gradually begin to fill in.
 
 In essence, patience is key when working with real-time data. As the system continues to operate and collect data over time, your user experience will become richer and more informative. You're now plugged into the exciting, ever-evolving universe of Elite Dangerous, and you can look forward to seeing this dynamic dataset grow and develop in real time. Enjoy the journey!
+
+## Further Information
+
+At its current stage, it's important to note that the EDDN Datastream application presented in this project is a prototype, representing a proof-of-concept for the desired functionality. While it provides a foundation for working with real-time data from the EDDN feed and demonstrates basic visualizations and data processing, it is considered to be in a crude state.
+
+The purpose of this initial version is to showcase the potential and serve as a starting point for future development. There are plans to evolve the application into a more optimized and robust system with enhanced features, improved performance, and a fully responsive interface. This includes expanding the available data, providing more comprehensive visualizations, and offering detailed explanations and insights.
+
+The development roadmap for the EDDN Datastream application includes the following considerations:
+
+    Enhanced Data Collection: The application will be designed to collect and process a wider range of data from the EDDN feed. This will involve expanding the data sources and incorporating additional data types to provide a more comprehensive view of the Elite Dangerous universe.
+
+    Advanced Visualizations: Future iterations of the application will include more sophisticated visualizations, leveraging libraries such as D3.js and Three.js to create immersive and interactive experiences. These visualizations will allow users to explore the data from different perspectives and gain deeper insights into the dynamic nature of the universe.
+
+    Responsive User Interface: The application will be optimized for different devices and screen sizes, ensuring a seamless user experience across desktop, tablet, and mobile platforms. The interface will be designed with user-friendliness in mind, providing intuitive navigation and clear explanations of the displayed data.
+
+    Data Explanations and Insights: To enhance the user experience, the application will provide detailed explanations and insights into the collected data. This may include explanations of specific events or trends within the Elite Dangerous universe, highlighting interesting patterns, and offering contextual information to aid in understanding the significance of the data.
+
+    Performance Optimization: Efforts will be made to optimize the performance of the application, ensuring efficient data processing, indexing, and searching using Elasticsearch. This will involve fine-tuning the backend processes, implementing caching mechanisms, and adopting best practices to deliver a responsive and seamless experience to users.
+
+By evolving the current prototype into a fully optimized and feature-rich application, the aim is to create a powerful tool that enables users to delve deep into the dynamic world of real-time data in Elite Dangerous. With each iteration, the EDDN Datastream application will grow, providing an increasingly captivating and informative experience for users to explore and engage with the evolving universe.
