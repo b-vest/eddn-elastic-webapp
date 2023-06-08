@@ -10,6 +10,8 @@ While the project focuses on Elite Dangerous and the EDDN feed, the concepts and
 
 Join us on this exciting journey of building your own EDDN Datastream application and explore the dynamic world of real-time data.
 
+As of 08/08/2023 this project is online and browsable at [https://eddnapp.baremetalbridge.com/rawdata.html](https://eddnapp.baremetalbridge.com/rawdata.html)
+
 
 ## Quick Install
 This is designed to work on Ubunut 22.04. It should work on other Debian based distros but I have only tested this on Ubuntu 22.04.
