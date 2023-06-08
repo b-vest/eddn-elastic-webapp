@@ -11,6 +11,8 @@ While the project focuses on Elite Dangerous and the EDDN feed, the concepts and
 Join us on this exciting journey of building your own EDDN Datastream application and explore the dynamic world of real-time data.
 
 
+## Quick Install
+
 To get this going quickly run all of the commands below.
 
 ```
