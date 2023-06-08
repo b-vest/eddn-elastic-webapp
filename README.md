@@ -75,14 +75,15 @@ The purpose of this initial version is to showcase the potential and serve as a 
 
 The development roadmap for the EDDN Datastream application includes the following considerations:
 
-    Enhanced Data Collection: The application will be designed to collect and process a wider range of data from the EDDN feed. This will involve expanding the data sources and incorporating additional data types to provide a more comprehensive view of the Elite Dangerous universe.
+   Enhanced Data Collection: The application will be designed to collect and process a wider range of data from the EDDN feed. This will involve expanding the data sources and incorporating additional data types to provide a more comprehensive view of the Elite Dangerous universe.
 
-    Advanced Visualizations: Future iterations of the application will include more sophisticated visualizations, leveraging libraries such as D3.js and Three.js to create immersive and interactive experiences. These visualizations will allow users to explore the data from different perspectives and gain deeper insights into the dynamic nature of the universe.
+   Advanced Visualizations: Future iterations of the application will include more sophisticated visualizations, leveraging libraries such as D3.js and Three.js to create immersive and interactive experiences. These visualizations will allow users to explore the data from different perspectives and gain deeper insights into the dynamic nature of the universe.
 
-    Responsive User Interface: The application will be optimized for different devices and screen sizes, ensuring a seamless user experience across desktop, tablet, and mobile platforms. The interface will be designed with user-friendliness in mind, providing intuitive navigation and clear explanations of the displayed data.
+   Responsive User Interface: The application will be optimized for different devices and screen sizes, ensuring a seamless user experience across desktop, tablet, and mobile platforms. The interface will be designed with user-friendliness in mind, providing intuitive navigation and clear explanations of the displayed data.
 
-    Data Explanations and Insights: To enhance the user experience, the application will provide detailed explanations and insights into the collected data. This may include explanations of specific events or trends within the Elite Dangerous universe, highlighting interesting patterns, and offering contextual information to aid in understanding the significance of the data.
+   Data Explanations and Insights: To enhance the user experience, the application will provide detailed explanations and insights into the collected data. This may include explanations of specific events or trends within the Elite Dangerous universe, highlighting interesting patterns, and offering contextual information to aid in understanding the significance of the data.
 
-    Performance Optimization: Efforts will be made to optimize the performance of the application, ensuring efficient data processing, indexing, and searching using Elasticsearch. This will involve fine-tuning the backend processes, implementing caching mechanisms, and adopting best practices to deliver a responsive and seamless experience to users.
+    
+   Performance Optimization: Efforts will be made to optimize the performance of the application, ensuring efficient data processing, indexing, and searching using Elasticsearch. This will involve fine-tuning the backend processes, implementing caching mechanisms, and adopting best practices to deliver a responsive and seamless experience to users.
 
 By evolving the current prototype into a fully optimized and feature-rich application, the aim is to create a powerful tool that enables users to delve deep into the dynamic world of real-time data in Elite Dangerous. With each iteration, the EDDN Datastream application will grow, providing an increasingly captivating and informative experience for users to explore and engage with the evolving universe.
