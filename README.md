@@ -17,6 +17,8 @@ This is designed to work on Ubunut 22.04. It should work on other Debian based d
 To get this going quickly run all of the commands below.
 
 ```
+cd ~
+git clone https://github.com/b-vest/eddn-elastic-webapp.git
 sudo sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/g' /etc/needrestart/needrestart.conf
 sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf
 sudo apt update
@@ -32,18 +34,21 @@ node.name: node-1
 path.data: /var/lib/elasticsearch
 path.logs: /var/log/elasticsearch
 network.host: localhost" | sudo tee /etc/elasticsearch/elasticsearch.yml
-
+echo "Starting Elasticsearch"
 sudo service elasticsearch restart
-
+echo "Elasticsearch Started"
+echo "Installing NPM modules"
 npm install --prefix ~/eddn-elastic-webapp/ ~/eddn-elastic-webapp/
-
+echo "Setting Elasticsearch index template"
 curl -XPUT "http://localhost:9200/_template/stellar_body_template?include_type_name" -H 'Content-Type: application/json' -d @./stellar-body-elastic-index-template.json
-
+echp "Installing NodeJS"
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
 sudo apt-get install -y nodejs
+echo "Installing PM2"
 sudo npm install -g pm2
-
+echo "Starting EDDN parser"
 pm2 start ~/eddn-elastic-webapp/eddn-parser.js
+echo "Starting Web and Socket Server"
 pm2 start ~/eddn-elastic-webapp/eddn-webserver.js
 ```
 
