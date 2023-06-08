@@ -55,3 +55,12 @@ echo "Starting Web and Socket Server"
 pm2 start ~/eddn-elastic-webapp/eddn-webserver.js
 ```
 
+## Post-Installation Expectations
+
+Once you've successfully installed and initiated the EDDN Datastream application, please remember that you're working with a real-time data feed. Therefore, initially, you may find only a limited amount of data available in the system.
+
+The 2D graph on the main page, as well as the raw data section, should start populating with data almost immediately. You'll likely see a few data points plotted on the graph, representing the live data being processed. The raw data section will also begin to display a series of data entries as they stream in. These entries, although they might be sparse initially, represent the real-time nature of the EDDN feed.
+
+However, the 3D star map, one of the more visually captivating features of this application, might not show much data at first. Given its complex nature and the depth of data it represents, it will require a more substantial data input to start revealing significant patterns. So, don't be discouraged if you're only seeing a minimal number of stars displayed. The data input from the EDDN feed is continual, and as more data is collected and processed, the 3D star map will gradually begin to fill in.
+
+In essence, patience is key when working with real-time data. As the system continues to operate and collect data over time, your user experience will become richer and more informative. You're now plugged into the exciting, ever-evolving universe of Elite Dangerous, and you can look forward to seeing this dynamic dataset grow and develop in real time. Enjoy the journey!
