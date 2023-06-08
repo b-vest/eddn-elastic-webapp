@@ -1,3 +1,6 @@
+sudo sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/g' /etc/needrestart/needrestart.conf
+sudo apt update
+sudo apt upgrade -y
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 sudo apt-get install apt-transport-https
 echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
@@ -11,18 +14,18 @@ path.logs: /var/log/elasticsearch
 network.host: localhost"| sudo tee /etc/elasticsearch/elasticsearch.yml
 
 sudo service elasticsearch restart
+cd ~
+cd eddn-elastic-webapp/
+npm install
 
-curl -XPUT "http://localhost:9200/_template/stellar_body_template?include_type_name" -H 'Content-Type: application/json' -d @template.json
+curl -XPUT "http://localhost:9200/_template/stellar_body_template?include_type_name" -H 'Content-Type: application/json' -d @./stellar-body-elastic-index-template.json
 
 
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
 sudo apt-get install -y nodejs
 sudo npm install -g pm2
 
-cd ~
-git clone https://github.com/b-vest/eddn-elastic-webapp.git
-cd eddn-elastic-webapp/
-npm install
+
 
 pm2 start ~/eddn-elastic-webapp/eddn-parser.js
 pm2 start ~/eddn-elastic-webapp/eddn-webserver.js
