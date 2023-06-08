@@ -1,4 +1,4 @@
-####Project Summary
+# Project Summary
 
 This project focuses on building an EDDN Datastream application that harnesses the power of real-time data updates from the EDDN (Elite Dangerous Data Network). The point of this project is not so much about an addon to the game but more about working with a realtime dataset that is rich with data types. 
 
