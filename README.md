@@ -47,32 +47,3 @@ pm2 start ~/eddn-elastic-webapp/eddn-parser.js
 pm2 start ~/eddn-elastic-webapp/eddn-webserver.js
 ```
 
-    The first two sed commands modify the contents of the /etc/needrestart/needrestart.conf file. The first command replaces the line #$nrconf{restart} = 'i'; with $nrconf{restart} = 'a';. The second command replaces the line #$nrconf{kernelhints} = -1; with $nrconf{kernelhints} = -1;. The sed -i option modifies the file in-place.
-
-    sudo apt update updates the package lists for upgrades and installs.
-
-    sudo apt upgrade -y upgrades the installed packages with the -y option that automatically answers "yes" to any prompts.
-
-    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add - retrieves the GPG key for Elasticsearch and adds it to the keyring.
-
-    sudo apt-get install apt-transport-https installs the apt-transport-https package, which allows the use of HTTPS repositories with APT.
-
-    echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list adds the Elastic package repository to the APT sources list.
-
-    sudo apt-get update updates the package lists again to include the new repository.
-
-    sudo apt-get install elasticsearch installs Elasticsearch from the added repository.
-
-    The next set of commands use echo and tee to write a multi-line configuration to the /etc/elasticsearch/elasticsearch.yml file, which specifies various settings for Elasticsearch.
-
-    sudo service elasticsearch restart restarts the Elasticsearch service to apply the new configuration.
-
-    npm install --prefix ~/eddn-elastic-webapp/ ~/eddn-elastic-webapp/ installs the Node.js dependencies for the eddn-elastic-webapp project located in the ~/eddn-elastic-webapp/ directory.
-
-    curl is used to send HTTP requests. The provided command sends a PUT request to create an Elasticsearch index template named stellar_body_template using the JSON data from the stellar-body-elastic-index-template.json file.
-
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs retrieves a script from the NodeSource repository to set up the Node.js repository for version 18.x. Then it installs Node.js and npm using apt-get.
-
-    sudo npm install -g pm2 globally installs the pm2 package, which is a process manager for Node.js applications.
-
-    pm2 start ~/eddn-elastic-webapp/eddn-parser.js and pm2 start ~/eddn-elastic-webapp/eddn-webserver.js start two Node.js applications (eddn-parser.js and eddn-webserver.js) using pm2 for process management.
