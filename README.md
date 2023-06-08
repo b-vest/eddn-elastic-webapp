@@ -12,6 +12,7 @@ Join us on this exciting journey of building your own EDDN Datastream applicatio
 
 
 ## Quick Install
+This is designed to work on Ubunut 22.04. It should work on other Debian based distros but I have only tested this on Ubuntu 22.04.
 
 To get this going quickly run all of the commands below.
 
