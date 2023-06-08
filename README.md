@@ -10,7 +10,7 @@ While the project focuses on Elite Dangerous and the EDDN feed, the concepts and
 
 Join us on this exciting journey of building your own EDDN Datastream application and explore the dynamic world of real-time data.
 
-As of 08/08/2023 this project is online and browsable at [https://eddnapp.baremetalbridge.com/](https://eddnapp.baremetalbridge.com/)
+As of 06/08/2023 this project is online and browsable at [https://eddnapp.baremetalbridge.com/](https://eddnapp.baremetalbridge.com/)
 
 
 ## Quick Install
