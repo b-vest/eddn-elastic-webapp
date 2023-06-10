@@ -37,7 +37,14 @@ const conf = {
 
   initScene()
 
-const socket = new WebSocket('ws://'+window.location.hostname+':3000');
+var socket;
+if (window.location.protocol === "https:") {
+   console.log("HTTPS");
+   socket = new WebSocket('wss://'+window.location.hostname);
+}else{
+  console.log("HTTP");
+  socket = new WebSocket('ws://'+window.location.hostname+':3000');
+}
 
 // Connection opened
 socket.addEventListener('open', function (event) {

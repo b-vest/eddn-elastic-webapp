@@ -9,12 +9,16 @@ const healthKey = {
 	number_of_pending_tasks: "# Pending Tasks"
 }
 
+console.log(window.location.hostname);
+var socket;
+if (window.location.protocol === "https:") {
+   console.log("HTTPS");
+   socket = new WebSocket('wss://'+window.location.hostname);
+}else{
+  console.log("HTTP");
+  socket = new WebSocket('ws://'+window.location.hostname+':3000');
+}
 
-var path = window.location.pathname;
-var page = path.split("/").pop();
-console.log(page);
-
-const socket = new WebSocket('ws://'+window.location.hostname+':3000');
 
 // Connection opened
 socket.addEventListener('open', function (event) {
@@ -41,6 +45,8 @@ socket.addEventListener('message', function (event) {
 socket.addEventListener('close', function (event) {
   console.log('WebSocket connection closed');
 });
+
+
 
 
 function responsive() {
