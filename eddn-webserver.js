@@ -15,7 +15,8 @@ const esClient = new Client({
 
 //In this version of the script we will store cache data in a global variable
 var runtimeObject = {
-	health: {}
+	health: {},
+  eddn2d:{}
 };
 
 fetchAndStore();
@@ -46,10 +47,10 @@ wss.on('connection', (ws) => {
     	}
     	ws.send(JSON.stringify(sendObject));
     }
-    if(fromClient.function === "sendEventHistogram"){
+    if(fromClient.function === "sendInitial2dDataload"){
     	const sendObject = {
-    		function: "renderEventHistogram",
-    		lineGraphData: runtimeObject.eventLineHistogram
+    		function: "renderAllEDDN2D",
+    		eddn2d: runtimeObject.eddn2d
     	}
     	ws.send(JSON.stringify(sendObject));
     }
@@ -117,10 +118,14 @@ async function fetchAndStore() {
   }
   runtimeObject['rawData'] = await getRawData("",100);
   //console.log(rawData.hits);
-  runtimeObject["eventLineHistogram"] = await getEventLineGraph();
+  runtimeObject.eddn2d["eventLineHistogram"] = await getEventLineGraph();
 
   const starMapRawData = await getStarMap();
   runtimeObject["starMapData"] = processStarMap(starMapRawData.hits.hits); 
+
+  runtimeObject.eddn2d["starTypeBarChart"] = await getStarTypeCount();
+
+
   //console.log(runtimeObject);
 }
 
@@ -238,6 +243,62 @@ async function getStarMap(){
 	}
 	return;
 
+}
+
+async function getStarTypeCount(){
+  const starTypeQuery = {
+    "index": 'stellar_body_index',
+    "body":{
+      "aggs": {
+        "StarType": {
+          "terms": {
+            "field": "StarType",
+            "order": {
+              "_count": "desc"
+            },
+            "size": 50
+          }
+        }
+      },
+      "size": 0,
+      "script_fields": {},
+      "stored_fields": [
+        "*"
+      ],
+      "runtime_mappings": {},
+      "query": {
+        "bool": {
+          "must": [],
+          "filter": [
+            {
+              "range": {
+                "timestamp": {
+                  "format": "strict_date_optional_time",
+                  "gte": "now-1h/h",
+                  "lte": "now/h"
+                }
+              }
+            }
+          ],
+          "should": [],
+          "must_not": []
+        }
+      }
+    }
+  };
+
+console.log(starTypeQuery);
+
+  try{
+    const rawData = await esClient.search(
+        starTypeQuery
+    );
+    return rawData.body;
+
+  } catch(error){
+    console.log(error)
+  }
+  return;
 }
 
 

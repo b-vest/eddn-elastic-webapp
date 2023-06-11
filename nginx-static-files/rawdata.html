@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EDDN To Elasticsearch to Node WebApp Project</title>
+  <!-- Load an icon library to show a hamburger menu (bars) on small screens Commit Test-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="./css/simple-grid.min.css">
+  <link rel="stylesheet" href="./css/site.css">
+
+</head>
+<body>
+
+<div class="allContent" style="max-width: 95%; margin:auto;">
+<div class="topnav" id="myTopnav">
+  <a href="index.html">Home</a>
+  <a href="2dapp.html">2D Stats</a>
+  <a href="3dapp.html">3D Maps</a>
+  <a href="rawdata.html" class="active">Raw Data</a>
+  <a href="hoststatus.html">Host Stats</a>
+  <a id="nodeStatus">Updating</a>
+
+  <a href="javascript:void(0);" class="icon" onclick="responsive()">
+    <i class="fa fa-bars"></i>
+  </a>
+</div><!--End Nav-->
+    <div class="container">
+      <div class="row">
+        <div id="rawdataCol" class="col-12">
+          Raw Data Table Here
+        </div>
+      </div>
+    </div>
+</div>
+ <script src="./js/rawdataapp.js"></script> 
+
+</body>
+</html>
