@@ -28,7 +28,7 @@ function loadMenu() {
             var sidebarItem = document.getElementById(fileName[0]);
             sidebarItem.className += ' active';
 
-            if (fileName[0] != 'eddn-webapp.html' && fileName[0] != 'eddn-2d.html' && fileName[0] != 'eddn-3d.html') {
+            if (fileName[0] != 'eddn-webapp.html' && fileName[0] != 'eddn-2d.html' && fileName[0] != 'eddn-3d.html' && fileName[0] != 'eddn-rawdata.html') {
                 // Get all elements with the "eddn-submenu" class
                 var submenus = document.getElementsByClassName('eddn-submenu');
                 console.log("Collapsing menu");
