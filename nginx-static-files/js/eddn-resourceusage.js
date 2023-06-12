@@ -15,6 +15,7 @@ socket.addEventListener('message', function (event) {
   console.log(serverData);
   if(serverData.function === "rendrSystemStats"){
     renderSystemLoadHistogram(serverData.systemMetrics.systemLoad.aggregations);
+    renderSystemCPUHistogram(serverData.systemMetrics.systemCPU.aggregations);
   }
 });
 
@@ -30,6 +31,81 @@ function randomRgbColor() {
     return [r,g,b];
 
 }
+function renderSystemCPUHistogram(systemCPUData){
+  const ctx = document.getElementById('canvasSystemCPU');
+  const systemCPU = [];
+  const ioCPU = [];
+  const timeStamps = []
+  for (const bucket of systemCPUData.Timestamp.buckets) {
+    const dateObject = new Date(bucket.key_as_string);
+    var dateHours = dateObject.getHours();
+    var dateMinutes = dateObject.getMinutes();
+    var dateSeconds = dateObject.getSeconds();
+    if (dateMinutes <= 9) {
+      dateMinutes = "0" + dateMinutes;
+    }
+    if (dateHours <= 9) {
+      dateHours = "0" + dateSeconds;
+    }
+    if (dateSeconds <= 9) {
+      dateSeconds = "0" + dateSeconds;
+    }
+    const thisTimesatamp = dateHours + ":" + dateMinutes + ":" + dateSeconds;
+    console.log(thisTimesatamp);
+    timeStamps.push(thisTimesatamp);
+    systemCPU.push(bucket.TotalCPU.value);
+    ioCPU.push(bucket.IOWaitCPU.value)
+  }
+
+      const data = {
+    labels: timeStamps,
+    datasets: [{
+        label: 'System CPU',
+        data: systemCPU,
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
+        pointRadius: 0,
+        borderWidth: 2
+      },
+      {
+        label: 'IOWait CPU',
+        data: ioCPU,
+        fill: false,
+        borderColor: 'rgb(175, 92, 92)',
+        tension: 0.1,
+        pointRadius: 0,
+        borderWidth: 2,
+      }
+    ]
+  };
+
+
+
+  const config = {
+    type: 'line',
+  };
+  console.log("Creating Chart");
+  new Chart(ctx, {
+    type: 'line',
+    data: data,
+    options: {
+      scales: {
+        xAxes: [{
+          position: 'bottom',
+          min: 0, // My use case requires starting at zero
+          beginAtZero: true,
+          ticks: {
+            maxTicksLimit: 4,
+            maxRotation: 0,
+            minRotation: 0
+          }
+        }]
+      }
+    }
+  });
+
+}
 
 
 
@@ -42,7 +118,7 @@ function renderSystemLoadHistogram(systemLoadData){
   const timeStamps = [];
 
   for (const bucket of systemLoadData.Timestamp.buckets) {
-    console.log(bucket);
+    //console.log(bucket);
     const dateObject = new Date(bucket.key_as_string);
     var dateHours = dateObject.getHours();
     var dateMinutes = dateObject.getMinutes();
@@ -64,7 +140,7 @@ function renderSystemLoadHistogram(systemLoadData){
     systemLoad3.push(bucket.Load15.value)
   }
 
-  console.log(systemLoad1);
+  //console.log(systemLoad1);
     const data = {
     labels: timeStamps,
     datasets: [{
