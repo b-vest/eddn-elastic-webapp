@@ -8,7 +8,7 @@
 	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
 	<meta name="author" content="AdminKit">
 	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
-
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">  
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
 
@@ -60,31 +60,11 @@
 			<main class="content">
 				<div class="container-fluid p-0">
 
-					<h1 class="h3 mb-3"><strong>Eddn Web App 2D Visualizations</strong></h1>
+					<h1 class="h3 mb-3"><strong>Eddn Web App 3D Star Map</strong></h1>
 					<div class="row">
-						<div class="col-12 col-lg-6">
-							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title">Events Over Time</h5>
-									<div class="card-body">
-										<div class="chart">
-											<canvas id="eddn2DEventsLineChart"></canvas>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-12 col-lg-6">
-							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title">Bar Chart Star Types</h5>
-									<div class="card-body">
-										<div class="chart">
-											<canvas id="eddn2dBarChartStarTypes"></canvas>
-										</div>
-									</div>
-								</div>
-							</div>
+						<div class="col-12" id="mapCol">
+							<canvas class="canvas" id="edJumpStars">
+      						</canvas>
 						</div>
 					</div>
 					</main>
@@ -109,10 +89,44 @@
 			</footer>
 		</div>
 	</div>
+	    <script type="x-shader/x-fragment" id="fragmentshader">
+
+      uniform sampler2D pointTexture;
+
+      varying vec3 vColor;
+
+      void main() {
+
+        gl_FragColor = vec4( vColor, 1.0 );
+
+        gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );
+
+      }
+
+    </script>
+    <script type="x-shader/x-vertex" id="vertexshader">
+
+      attribute float size;
+
+      varying vec3 vColor;
+
+      void main() {
+
+        vColor = color;
+
+        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+        gl_PointSize = size * ( 300.0 / -mvPosition.z );
+
+        gl_Position = projectionMatrix * mvPosition;
+
+      }
+
+    </script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script src="js/app.js"></script>
-	<script src="js/site.js?v=6"></script>
-	<script src="js/eddn-2d.js?v=3"></script>
+	<script src="js/site.js?v=5"></script>
+	<script type="module" src="js/eddn-3d.js?v=3"></script>
 	<script>    
 		document.addEventListener('DOMContentLoaded', function() {
       		loadMenu();

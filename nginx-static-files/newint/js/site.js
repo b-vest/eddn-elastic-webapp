@@ -14,7 +14,8 @@ function loadMenu() {
     var menuContainer = document.getElementById('menuContainer');
     var xhr = new XMLHttpRequest();
     var currentPage = window.location.href;
-    xhr.open('GET', './objects/main-menu.html', true);
+    xhr.open('GET', './objects/main-menu.html?v='+(new Date()).getTime(), true);
+    console.log('./objects/main-menu.html?v='+(new Date()).getTime());
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             menuContainer.innerHTML = xhr.responseText;
@@ -27,7 +28,7 @@ function loadMenu() {
             var sidebarItem = document.getElementById(fileName[0]);
             sidebarItem.className += ' active';
 
-            if (fileName[0] != 'eddn-webapp.html' && fileName[0] != 'eddn-2d.html') {
+            if (fileName[0] != 'eddn-webapp.html' && fileName[0] != 'eddn-2d.html' && fileName[0] != 'eddn-3d.html') {
                 // Get all elements with the "eddn-submenu" class
                 var submenus = document.getElementsByClassName('eddn-submenu');
                 console.log("Collapsing menu");
