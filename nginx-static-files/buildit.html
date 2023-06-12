@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
+	<meta name="author" content="AdminKit">
+	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+
+	<link rel="canonical" href="https://demo-basic.adminkit.io/" />
+
+	<title>BareMetal Bridge</title>
+
+	<link href="css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body style="max-width:1600px;">
+	<div class="wrapper">
+		<nav id="sidebar" class="sidebar js-sidebar">
+			<div id="menuContainer" class="sidebar-content js-simplebar">
+			</div>
+		</nav>
+		<div class="main">
+			<nav class="navbar navbar-expand navbar-light navbar-bg">
+				<a class="sidebar-toggle js-sidebar-toggle">
+          <i class="hamburger align-self-center"></i>
+        </a>
+
+				<div class="navbar-collapse collapse">
+					
+					<ul class="navbar-nav navbar-align">
+						<li class="nav-item dropdown">
+							<a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
+								<div class="position-relative">
+									<i class="align-middle" data-feather="bell"></i>
+									<span class="indicator">0</span>
+								</div>
+							</a>
+
+							<div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0" aria-labelledby="alertsDropdown">
+								<div class="dropdown-menu-header">
+									0 New Notifications
+								</div>
+								<div class="list-group">
+
+								</div>
+								<div class="dropdown-menu-footer">
+									<a href="#" class="text-muted">Show all notifications</a>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
+
+			<main class="content">
+				<div class="container-fluid p-0">
+
+					<div class="row align-items-center">
+						<div class="col-2"></div>
+						<div class="col-8 ">
+							<h1 class="h3 mb-3"><strong>Build This Project</strong></h1>
+
+							<p>Welcome to the guide on building an EDDN Datastream application using Elasticsearch, Node.js, WebSockets, and the EDDN (Elite Dangerous Data Network) feed. In this tutorial, we will explore how to create a dynamic and interactive web application that leverages the power of Elasticsearch as the data indexing and search engine, Node.js for server-side development, WebSockets for real-time communication, and the EDDN feed for real-time data updates.</p>
+
+							<p>To create a robust and efficient server-side architecture for the EDDN Datastream application, we combine Elasticsearch, Node.js, and WebSockets. Alongside these core components, we leverage NPM (Node Package Manager) and PM2 (Process Manager 2) to enhance the development and deployment process.</p>
+
+							<p>NPM simplifies dependency management, providing an easy way to add, update, and remove project dependencies. It offers a vast ecosystem of pre-built packages that enable access to additional functionality for WebSockets, data processing, and more. NPM also ensures version control for project dependencies, maintaining consistency across different environments.</p>
+
+							<p>PM2 plays a crucial role in managing the Node.js server. It monitors the health and performance of the server, providing insights into resource usage and logs. PM2 automatically restarts the server in case of crashes or errors, minimizing downtime and ensuring uninterrupted service. Additionally, PM2 supports load balancing, allowing you to scale your application horizontally by running multiple instances of the server for efficient resource utilization and improved response times.</p>
+
+							<p>By leveraging NPM and PM2, we streamline dependency management, access a wide range of packages, ensure version consistency, and benefit from enhanced process management capabilities, all of which contribute to a smoother development and deployment experience for the EDDN Datastream application.</p>
+
+							<p>In this project, we will incorporate the EDDN feed, a real-time data stream from the popular game Elite Dangerous. The EDDN feed provides a wealth of real-time information about in-game events, market prices, and other game-related data. By integrating the EDDN feed into our application, we can harness this data stream to create captivating visualizations and keep users updated with the latest game information.</p>
+
+							<p>Throughout this guide, we will walk you through the installation and setup of Elasticsearch, the configuration of the Node.js server, the establishment of a WebSocket connection, and the integration of the EDDN feed into our real-time data processing pipeline. We will demonstrate how to handle real-time data updates from the EDDN feed, perform efficient data indexing and searching with Elasticsearch, and create engaging user experiences with visualizations powered by libraries like D3.js and Three.js.</p>
+
+							<p>While this guide focuses on Elasticsearch, Node.js, WebSockets, and the EDDN feed from Elite Dangerous, feel free to adapt the concepts and techniques to your specific requirements. Let’s dive in and embark on this exciting journey of creating an EDDN Datastream application that immerses users in the dynamic world of Elite Dangerous!</p>
+							<br>
+							<h3>Elasticsearch 7: A Choice for Simplicity and Compatibility</h3>
+							
+							<p>In this project, we have made a deliberate decision to use Elasticsearch 7 as the primary data indexing and search engine. While newer versions of Elasticsearch may be available, we have chosen to stick with Elasticsearch 7 for a specific reason.</p>
+							
+							<p>In my opinion Elasticsearch 8 and its associated components introduce significant changes and a shift towards a more containerized and SaaS-centric architecture. While these changes may offer benefits in certain scenarios, they can introduce complexities for standalone installations, such as the one required for our project.</p>
+							
+							<p>As someone experienced in working with Elasticsearch for several years, I have found Elasticsearch 7 to be more straightforward to set up and work with, especially for a single-node deployment like the one we need for this project. It provides a stable and reliable foundation for building our EDDN Datastream application.</p>
+							
+							<p>By using Elasticsearch 7, we can focus on the core functionality of our application without being burdened by the intricacies introduced in newer versions. This allows us to maintain simplicity, compatibility, and ease of setup throughout the project.</p>
+							
+							<p>Now that we have a clear understanding of why we are using Elasticsearch 7, let’s proceed with the installation and setup of the required components to build our EDDN Datastream application.</p>
+						</div>
+					</main>
+
+			<footer class="footer" id="mainFooter">
+				<div class="container-fluid">
+					<div class="row text-muted">
+						<div class="col-6 text-start">
+							<p class="mb-0">
+								<a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>BareMetal Bridge</strong></a> - <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>EDDN Web App Project</strong></a>								&copy;
+							</p>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</div>
+	<script src="js/app.js"></script>
+	<script src="js/site.js?v=3"></script>
+	<script>    
+		document.addEventListener('DOMContentLoaded', function() {
+      		loadMenu();
+    	});
+	</script>
+
+</body>
+
+</html>
