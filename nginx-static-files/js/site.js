@@ -1,15 +1,4 @@
-
-//Key List for Cluster Health Items to Print
-const healthKey = {
-	cluster_name: "Cluster Name",
-	status: "Overall Status",
-	number_of_nodes: "# Nodes",
-	number_of_data_nodes: "# Data Nodes",
-	unassigned_shards: "# Unassigned",
-	number_of_pending_tasks: "# Pending Tasks"
-}
-
-console.log(window.location.hostname);
+//since nearly all parts of this site use the WebSocket we will load it in the global site.js
 var socket;
 if (window.location.protocol === "https:") {
    console.log("HTTPS");
@@ -18,63 +7,57 @@ if (window.location.protocol === "https:") {
   console.log("HTTP");
   socket = new WebSocket('ws://'+window.location.hostname+':3000');
 }
-
-
 // Connection opened
-socket.addEventListener('open', function (event) {
-  console.log('WebSocket connected');
-  // You can send data to the server using socket.send()
-  var sendToServer = {
-  	function:"sendHealth"
-  }
-  socket.send(JSON.stringify(sendToServer));
-});
-
-// Listen for messages from the server
-socket.addEventListener('message', function (event) {
-  //console.log('Message from server:', event.data);
-  const serverData = JSON.parse(event.data);
-  console.log(serverData);
-  if(serverData.function === "renderHealth"){
-  	console.log("Redner Health Table");
-  	updateHealthTable(serverData.health)
-  }
-});
-
-// Connection closed
-socket.addEventListener('close', function (event) {
-  console.log('WebSocket connection closed');
-});
 
 
+function loadMenu() {
+    var menuContainer = document.getElementById('menuContainer');
+    var xhr = new XMLHttpRequest();
+    var currentPage = window.location.href;
+    xhr.open('GET', './objects/main-menu.html?v='+(new Date()).getTime(), true);
+    console.log('./objects/main-menu.html?v='+(new Date()).getTime());
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            menuContainer.innerHTML = xhr.responseText;
 
+            // Reinitialize Feather Icons after setting the content
+            feather.replace();
 
-function responsive() {
-  var x = document.getElementById("myTopnav");
-  if (x.className === "topnav") {
-    x.className += " responsive";
-  } else {
-    x.className = "topnav";
-  }
+            var fileName = location.pathname.split("/").slice(-1)
+            console.log(fileName);
+            var sidebarItem = document.getElementById(fileName[0]);
+            sidebarItem.className += ' active';
+
+            if (fileName[0] != 'eddn-webapp.html' && fileName[0] != 'eddn-2d.html' 
+                && fileName[0] != 'eddn-3d.html' && fileName[0] != 'eddn-rawdata.html'
+                && fileName[0] != 'eddn-stats.html') {
+                // Get all elements with the "eddn-submenu" class
+                var submenus = document.getElementsByClassName('eddn-submenu');
+                console.log("Collapsing menu");
+                // Loop through each submenu and hide it
+                for (var i = 0; i < submenus.length; i++) {
+                    console.log(submenus[i]);
+                    submenus[i].style.display = 'none';
+                }
+            }
+        }
+    }
+    xhr.send();
 }
 
-function updateHealthTable(healthData) {
-	 var table = document.createElement('table');
-	for (const key in healthData) {
-		if(healthKey[key]){
-  			const row = table.insertRow();
-  			const cell1 = row.insertCell();
-  			const cell2 = row.insertCell();
-  			cell1.textContent = healthKey[key];
-  			cell2.textContent = healthData[key];
-  			console.log(key);
-  		}
-	}
-	d = new Date();
+function loadFooter(){
+    var footerContainer = document.getElementById('mainFooter');
+    var xhr = new XMLHttpRequest();
+    var currentPage = window.location.href;
+    xhr.open('GET', './objects/footer.html?v='+(new Date()).getTime(), true);
+    //console.log('./objects/main-menu.html?v='+(new Date()).getTime());
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            footerContainer.innerHTML = xhr.responseText;
 
-	const nodeStatusCol = document.getElementById('nodeStatusCol');
-	nodeStatusCol.innerHTML = "";
-	nodeStatusCol.appendChild(table);
-	nodeStatusCol.innerHTML += "<p>"+d.toLocaleString()+"<\p>";
-
+            // Reinitialize Feather Icons after setting the content
+            feather.replace();
+        }
+    }
+    xhr.send();    
 }

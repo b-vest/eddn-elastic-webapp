@@ -1,7 +1,7 @@
-import * as THREE from '../three.module.js';
-import Stats from '../stats.module.js';
+import * as THREE from './three.module.js';
+import Stats from './stats.module.js';
 //import { GUI } from './dat.gui.module.js';
-import { OrbitControls } from '../OrbitControls.js';
+import { OrbitControls } from './OrbitControls.js';
 
 var stars = [],vertices = [], colors = [], sizes = [];
 var camera,scene,renderer,cameraCtrl;
@@ -77,7 +77,7 @@ socket.addEventListener('close', function (event) {
 function renderStarMap(starMapData){
   
   for (const [key, value] of Object.entries(starMapData)) {
-    console.log(value);
+    //console.log(value);
     if(value === null){
       break
     }
@@ -114,31 +114,32 @@ function responsive() {
   }
 }
 
-function initScene(){
-  camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 2, 20000 );
+function initScene() {
+  const container = document.getElementById('mapCol');
+  const canvas = document.getElementById('edJumpStars');
+
+  camera = new THREE.PerspectiveCamera(100, 1024/768, 2, 20000);
   camera.position.z = 100; 
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(conf.background);
-  scene.fog = new THREE.FogExp2( 0x000000, 0.01 );
+  scene.fog = new THREE.FogExp2(0x000000, 0.01);
 
   renderer = new THREE.WebGLRenderer({ 
-    canvas: document.getElementById(conf.el) 
-      //logarithmicDepthBuffer: true 
+    canvas: canvas,
+    antialias: true
   });
-  //set the size of the renderer
-  renderer.setSize( window.innerWidth, window.innerHeight);
+renderer.setSize( 1024, 768 );
   cameraCtrl = new OrbitControls(camera, renderer.domElement);
   cameraCtrl.autoRotate = false;
   cameraCtrl.enableDamping = true;
   cameraCtrl.autoRotateSpeed = 0.1;
-  var stats = new Stats();
-  document.body.appendChild( stats.dom );
-  //add the renderer to the html document body
-  document.body.appendChild( renderer.domElement );
-  window.addEventListener( 'resize', onWindowResize );
-  document.addEventListener('mousemove', mouseDown)
 
+  var stats = new Stats();
+  
+  container.appendChild(canvas);
+  window.addEventListener('resize', onWindowResize);
+  document.addEventListener('mousemove', mouseDown);
 }
 
 function onWindowResize() {
