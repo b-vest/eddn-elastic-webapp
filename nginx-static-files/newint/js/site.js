@@ -28,7 +28,9 @@ function loadMenu() {
             var sidebarItem = document.getElementById(fileName[0]);
             sidebarItem.className += ' active';
 
-            if (fileName[0] != 'eddn-webapp.html' && fileName[0] != 'eddn-2d.html' && fileName[0] != 'eddn-3d.html' && fileName[0] != 'eddn-rawdata.html') {
+            if (fileName[0] != 'eddn-webapp.html' && fileName[0] != 'eddn-2d.html' 
+                && fileName[0] != 'eddn-3d.html' && fileName[0] != 'eddn-rawdata.html'
+                && fileName[0] != 'eddn-stats.html') {
                 // Get all elements with the "eddn-submenu" class
                 var submenus = document.getElementsByClassName('eddn-submenu');
                 console.log("Collapsing menu");
@@ -41,4 +43,21 @@ function loadMenu() {
         }
     }
     xhr.send();
+}
+
+function loadFooter(){
+    var footerContainer = document.getElementById('mainFooter');
+    var xhr = new XMLHttpRequest();
+    var currentPage = window.location.href;
+    xhr.open('GET', './objects/footer.html?v='+(new Date()).getTime(), true);
+    //console.log('./objects/main-menu.html?v='+(new Date()).getTime());
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            footerContainer.innerHTML = xhr.responseText;
+
+            // Reinitialize Feather Icons after setting the content
+            feather.replace();
+        }
+    }
+    xhr.send();    
 }
