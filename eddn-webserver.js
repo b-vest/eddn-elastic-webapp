@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
@@ -16,7 +17,8 @@ const esClient = new Client({
 //In this version of the script we will store cache data in a global variable
 var runtimeObject = {
 	health: {},
-  eddn2d:{}
+  eddn2d:{},
+  systemmetrics: {}
 };
 
 fetchAndStore();
@@ -60,6 +62,13 @@ wss.on('connection', (ws) => {
     		starMapData: runtimeObject.starMapData
     	}
     	ws.send(JSON.stringify(sendObject));
+    }
+    if(fromClient.function === "sendSystemStats"){
+      const sendObject = {
+        function: "rendrSystemStats",
+        systemMetrics: runtimeObject.systemmetrics
+      }
+      ws.send(JSON.stringify(sendObject));
     }
   });
 
@@ -125,8 +134,44 @@ async function fetchAndStore() {
 
   runtimeObject.eddn2d["starTypeBarChart"] = await getStarTypeCount();
 
+  runtimeObject.systemmetrics["systemLoad"] = await getSystemLoad();
 
-  //console.log(runtimeObject);
+  runtimeObject.systemmetrics["systemCPU"] = await getSystemCPU();
+
+  console.log("System Metrics");
+  console.log(runtimeObject.systemmetrics.systemLoad.aggregations);
+}
+
+
+
+async function getSystemLoad() {
+  const systemLoadQuery = fs.readFileSync("./es-queries/systemLoadQuery.json");
+  const sendQuery = JSON.parse(systemLoadQuery);
+  try{
+    const rawData = await esClient.search(
+        sendQuery
+    );
+    return rawData.body;
+
+  } catch(error){
+    console.log(error)
+  }
+  return;
+}
+
+async function getSystemCPU(){
+  const systemCPUQuery = fs.readFileSync("./es-queries/systemCPUQuery.json");
+  const sendQuery = JSON.parse(systemCPUQuery);
+  try{
+    const rawData = await esClient.search(
+        sendQuery
+    );
+    return rawData.body;
+
+  } catch(error){
+    console.log(error)
+  }
+  return;
 }
 
 

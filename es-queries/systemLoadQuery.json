@@ -1,0 +1,23 @@
+{
+  "index": "metricbeat-*",
+  "body":{  "aggs": {
+    "Timestamp": { "date_histogram": { "field": "@timestamp", "calendar_interval": "1m", "time_zone": "America/New_York", "min_doc_count": 1},
+      "aggs": {
+        "Load1": { "avg": { "field": "system.load.1" } },
+        "Load5": { "avg": { "field": "system.load.5" } },
+        "Load15": {"avg": { "field": "system.load.15" } }
+      }}
+  },
+  "size": 0,
+  "stored_fields": [
+    "*"
+  ],
+  "query": { 
+    "bool": {
+      "filter": [
+        { "range": { "@timestamp": { "format": "strict_date_optional_time", "gte": "now-1h/h", "lte": "now/h" } } }
+    ]
+  }
+}
+}
+}

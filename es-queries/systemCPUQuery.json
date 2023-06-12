@@ -1,0 +1,51 @@
+{
+  "index": "metricbeat-*",
+  "body":{  
+  "aggs": {
+    "Timestamp": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "fixed_interval": "30s",
+        "time_zone": "America/New_York",
+        "min_doc_count": 1
+      },
+      "aggs": {
+        "TotalCPU": {
+          "avg": {
+            "field": "system.cpu.total.pct"
+          }
+        },
+        "IOWaitCPU": {
+          "avg": {
+            "field": "system.cpu.iowait.pct"
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "script_fields": {},
+  "stored_fields": [
+    "*"
+  ],
+  "runtime_mappings": {},
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [
+        {
+          "range": {
+            "@timestamp": {
+              "format": "strict_date_optional_time",
+              "gte": "now-1h/h",
+              "lte": "now/h"
+            }
+          }
+        }
+      ],
+      "should": [],
+      "must_not": []
+    }
+  }
+}
+}
