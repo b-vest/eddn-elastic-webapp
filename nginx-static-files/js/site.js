@@ -40,6 +40,17 @@ function loadMenu() {
                     submenus[i].style.display = 'none';
                 }
             }
+            if (fileName[0] != 'metrics-deepdive.html' && fileName[0] != 'metrics-dd-filebeat.html' 
+                && fileName[0] != 'metrics-dd-metricbeat.html') {
+                // Get all elements with the "eddn-submenu" class
+                var submenus = document.getElementsByClassName('metricsdd-submenu');
+                console.log("Collapsing menu");
+                // Loop through each submenu and hide it
+                for (var i = 0; i < submenus.length; i++) {
+                    console.log(submenus[i]);
+                    submenus[i].style.display = 'none';
+                }
+            }
         }
     }
     xhr.send();

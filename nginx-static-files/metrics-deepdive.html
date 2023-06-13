@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
+	<meta name="author" content="AdminKit">
+	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+
+	<link rel="canonical" href="https://demo-basic.adminkit.io/" />
+
+	<title>BareMetal Bridge</title>
+
+	<link href="css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<div class="wrapper">
+		<nav id="sidebar" class="sidebar js-sidebar">
+			<div id="menuContainer" class="sidebar-content js-simplebar">
+			</div>
+		</nav>
+		<div class="main">
+			<nav class="navbar navbar-expand navbar-light navbar-bg">
+				<a class="sidebar-toggle js-sidebar-toggle">
+          <i class="hamburger align-self-center"></i>
+        </a>
+
+				<div class="navbar-collapse collapse">
+					<ul class="navbar-nav navbar-align">
+						<li class="nav-item dropdown">
+							<a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
+								<div class="position-relative">
+									<i class="align-middle" data-feather="bell"></i>
+									<span class="indicator">0</span>
+								</div>
+							</a>
+							<div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0" aria-labelledby="alertsDropdown">
+								<div class="dropdown-menu-header">
+									0 New Notifications
+								</div>
+								<div class="list-group">
+
+								</div>
+								<div class="dropdown-menu-footer">
+									<a href="#" class="text-muted">Show all notifications</a>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
+
+			<main class="content">
+				<div class="container-fluid p-0">
+
+					<h1 class="h3 mb-3"><strong>Elasticsearch - Metricbeat - Filebeat Metrics Deep Look</strong></h1>
+					<div class="row">
+						<div class="col-12" style="max-width:1024px;">
+							<div class="card">
+								<div class="card-header">
+									<h5 class="card-title">Overview</h5>
+									<p>This technical document provides an overview of the components utilized in our project, leveraging elements from the Elasticsearch Beats system. Specifically, we employ two key components: Filebeat and Metricbeat. Filebeat is responsible for monitoring and tracking server logs, while Metricbeat is utilized for tracking system and daemon metrics. This document will delve into the functionalities of each component and highlight their significance within our project.</p>
+									<br>
+									<h5 class="card-title">Introduction</h5>
+									<p>The utilization of the Elasticsearch Beats system in our project enables the collection of diverse datapoints from our servers and various supported services. By employing Filebeat and Metricbeat components, we can effectively monitor and analyze server logs and system metrics, respectively. This document aims to elucidate the roles and functionalities of these components, shedding light on their importance in our project.</p>
+									<br>
+									<h5 class="card-title">Filebeat</h5>
+									<p>Filebeat serves as a crucial component in our project, designed specifically for the purpose of monitoring server logs. It facilitates the collection, processing, and forwarding of log data, ensuring efficient and reliable data transfer. Key functionalities of Filebeat include:</p>
+									<p>
+										<b>a.</b> Log Data Collection: Filebeat efficiently scans and harvests log files from predefined paths on the servers. It supports a wide range of log formats and employs lightweight and low-resource mechanisms to accomplish this task.
+									</p>
+									<p>
+										<b>b.</b> Log Parsing and Enrichment: Filebeat offers parsing capabilities to extract relevant information from log data. It can be configured to handle logs with various formats, including structured, unstructured, or semi-structured data. Moreover, Filebeat allows for the enrichment of log events by incorporating additional metadata, enhancing the overall context of the log entries.
+									</p>
+									<p>
+										<b>c.</b> Reliable Data Forwarding: Once log data is collected and processed, Filebeat reliably forwards it to the desired destination. This could be an Elasticsearch cluster or other supported outputs like Logstash or Kafka. Filebeat employs mechanisms like buffering and retries to ensure fault-tolerant data transfer, even in the event of network disruptions.
+									</p>
+									<br>
+									<h5 class="card-title">Metricbeat</h5>
+									<p>Metricbeat plays a pivotal role in our project by facilitating the tracking and monitoring of system and daemon metrics. It provides a lightweight and efficient solution for collecting and visualizing real-time metrics. Key functionalities of Metricbeat include:.</p>
+									<p>
+									<b>a.</b> Metric Collection: Metricbeat offers a wide array of modules that cater to various system components and services. These modules are specifically designed to extract metrics from different sources, such as CPU usage, memory consumption, network statistics, and application-specific metrics. Metricbeat also supports custom modules, allowing for the inclusion of metrics from proprietary or specialized services.	
+									</p>
+									<p>
+									<b>b.</b> Modular Architecture: Metricbeat employs a modular architecture, which enables users to selectively enable and configure modules based on their specific monitoring requirements. This flexibility allows for targeted monitoring and ensures efficient resource utilization.
+									</p>
+									<p>
+									<b>c.</b> Metrics Visualization: Metricbeat seamlessly integrates with Elasticsearch and Kibana, facilitating the visualization and analysis of collected metrics. The metrics can be transformed into informative visual representations, aiding in identifying performance bottlenecks, trends, and anomalies.
+									</p>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</main>
+
+			<footer class="footer" id="mainFooter">
+				<div class="container-fluid">
+					<div class="row text-muted">
+						<div class="col-6 text-start">
+							<p class="mb-0">
+								<a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>BareMetal Bridge</strong></a> - <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>EDDN Web App Project</strong></a>								&copy;
+							</p>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</div>
+	<script src="js/app.js"></script>
+	<script src="js/site.js?v=4"></script>
+	<script>    
+		document.addEventListener('DOMContentLoaded', function() {
+      		loadMenu();
+    	});
+	</script>
+
+</body>
+
+</html>
