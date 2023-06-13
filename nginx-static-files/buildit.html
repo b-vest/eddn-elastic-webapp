@@ -94,6 +94,46 @@
 							<p>By using Elasticsearch 7, we can focus on the core functionality of our application without being burdened by the intricacies introduced in newer versions. This allows us to maintain simplicity, compatibility, and ease of setup throughout the project.</p>
 							
 							<p>Now that we have a clear understanding of why we are using Elasticsearch 7, let’s proceed with the installation and setup of the required components to build our EDDN Datastream application.</p>
+							<br>
+							<h3>The GitHub Thing</h3>
+							<pre>
+cd ~
+git clone https://github.com/b-vest/eddn-elastic-webapp.git
+sudo sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/g' /etc/needrestart/needrestart.conf
+sudo sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf
+sudo apt update
+sudo apt upgrade -y
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+sudo apt-get install apt-transport-https
+echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+sudo apt-get update
+sudo apt-get install elasticsearch
+echo "Configuring Elasticsearch"
+
+echo "cluster.name: eddn-project
+node.name: node-1
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+network.host: localhost" | sudo tee /etc/elasticsearch/elasticsearch.yml
+
+echo "Starting Elasticsearch"
+sudo service elasticsearch restart
+echo "Elasticsearch Started"
+cd ~/eddn-elastic-webapp
+echo "Setting Elasticsearch index template"
+curl -XPUT "http://localhost:9200/_template/stellar_body_template?include_type_name" -H 'Content-Type: application/json' -d @./stellar-body-elastic-index-template.json
+echo "Installing NodeJS"
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
+sudo apt-get install -y nodejs
+echo "Installing PM2"
+sudo npm install -g pm2
+echo "Installing NPM modules"
+npm install 
+echo "Starting EDDN parser"
+pm2 start ~/eddn-elastic-webapp/eddn-parser.js
+echo "Starting Web and Socket Server"
+pm2 start ~/eddn-elastic-webapp/eddn-webserver.js
+							</pre>
 						</div>
 					</main>
 
