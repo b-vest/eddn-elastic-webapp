@@ -31,10 +31,7 @@ wss.on('connection', (ws) => {
   // Handle WebSocket events
   ws.on('message', (message) => {
     // Process WebSocket messages
-    console.log(`Received message: ${message}`);
     const fromClient = JSON.parse(message);
-    console.log(fromClient);
-    //console.log(runtimeObject);
     if(fromClient.function === "sendHealth"){
     	const sendObject = {
     		function: "renderHealth",
@@ -120,13 +117,11 @@ async function getRawData(body,size){
 
 // Function to continuously fetch Elasticsearch health status and broadcast to WebSocket clients
 async function fetchAndStore() {
-	console.log("Running Fetch and Store")
   const healthStatus = await getClusterHealth();
   if (healthStatus) {
   	runtimeObject['health'] = healthStatus;
   }
   runtimeObject['rawData'] = await getRawData("",100);
-  //console.log(rawData.hits);
   runtimeObject.eddn2d["eventLineHistogram"] = await getEventLineGraph();
 
   const starMapRawData = await getStarMap();
@@ -138,8 +133,6 @@ async function fetchAndStore() {
 
   runtimeObject.systemmetrics["systemCPU"] = await getSystemCPU();
 
-  console.log("System Metrics");
-  console.log(runtimeObject.systemmetrics.systemLoad.aggregations);
 }
 
 
@@ -181,7 +174,6 @@ function processStarMap(starMapData){
 	var processedData = [];
 
 	for (const key in starMapData) {
-		//console.log(starMapData[key]);
 		const thisStar = {
 			starPosition: starMapData[key].fields.StarPos,
 			surfaceTemp: starMapData[key].fields.SurfaceTemperature[0],
@@ -331,9 +323,6 @@ async function getStarTypeCount(){
       }
     }
   };
-
-console.log(starTypeQuery);
-
   try{
     const rawData = await esClient.search(
         starTypeQuery
@@ -398,9 +387,6 @@ async function getEventLineGraph(){
   		}
 	}
 };
-
-
-console.log(lineQuery);
 
 	try{
 		const rawData = await esClient.search(

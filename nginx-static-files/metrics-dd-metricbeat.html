@@ -60,14 +60,184 @@
 			<main class="content">
 				<div class="container-fluid p-0">
 
-					<h1 class="h3 mb-3"><strong>Welcome to BareMetal Bridge</strong></h1>
+					<h1 class="h3 mb-3"><strong>Metricbeat Deep Dive For This Project</strong></h1>
 					<div class="row">
-						<div class="col-12 col-lg-6">
+						<div class="col-12" style="max-width:1024px;">
 							<div class="card">
 								<div class="card-header">
-									<h5 class="card-title">Headings</h5>
-									<h6 class="card-subtitle text-muted">All HTML headings, <code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code>, are available.</h6>
-									23
+									<h5 class="card-title">Introduction</h5>
+								</div>
+								<div class="card-body">
+								<p>
+									Metricbeat plays a fundamental role in our project, revolutionizing the way we collect, analyze, and visualize system metrics. As a lightweight and versatile tool developed by Elastic, Metricbeat offers seamless integration with Elasticsearch, enabling real-time monitoring and data collection. In our project, Metricbeat acts as a data shipper that collects a wide range of metrics from various sources within our infrastructure, such as CPU usage, memory utilization, network statistics, and more. With its robust capabilities, Metricbeat empowers us to gain valuable insights into the performance and health of our system, allowing us to make informed decisions and optimize our infrastructure. By leveraging Metricbeat's efficient metric collection and integration with Elasticsearch, we can unlock a wealth of information and drive the success of our project.
+								</p>
+								<h5 class="card-title">Our Configuration</h5>
+								<pre class="card-text">
+metricbeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+setup.template.settings:
+index.number_of_shards: 1
+index.codec: best_compression
+
+setup.kibana:
+
+output.elasticsearch:
+hosts: ["localhost:9200"]
+
+processors:
+
+    add_host_metadata: ~
+    add_cloud_metadata: ~
+    add_docker_metadata: ~
+    add_kubernetes_metadata: ~
+    </pre>
+
+    </section>
+    <section>
+  <h3>Configuration Breakdown</h3>
+  <ol>
+    <li>
+      <code>metricbeat.config.modules</code>: This section sets the configuration for Metricbeat modules. The <code>path</code> parameter defines the location of module configuration files (<code>${path.config}/modules.d/*.yml</code>). This allows us to specify and enable specific modules for metric collection. The <code>reload.enabled</code> parameter is set to <code>false</code> to disable automatic reloading of module configurations.
+    </li>
+    <li>
+      <code>setup.template.settings</code>: In this section, we configure the settings for the index template used by Metricbeat when indexing collected metrics. We set <code>index.number_of_shards</code> to 1 to optimize indexing performance and resource utilization. Additionally, we specify <code>index.codec</code> as <code>best_compression</code> to achieve efficient compression of stored metrics.
+    </li>
+    <li>
+      <code>setup.kibana</code>: This section is left empty, indicating that we have not explicitly configured the integration with Kibana. Metricbeat will utilize default or custom configurations already in place for Kibana.
+    </li>
+    <li>
+      <code>output.elasticsearch</code>: Here, we specify Elasticsearch as the output destination for the collected metrics. The <code>hosts</code> parameter is set to <code>["localhost:9200"]</code>, indicating that Metricbeat should communicate with Elasticsearch running on the local machine.
+    </li>
+    <li>
+      <code>processors</code>: The processors section defines a series of enrichments to be applied to the collected metrics. In this configuration, we utilize several processors:
+      <ul>
+        <li><code>add_host_metadata</code>: Adds host-specific metadata to the metrics.</li>
+        <li><code>add_cloud_metadata</code>: Retrieves metadata related to the cloud environment.</li>
+        <li><code>add_docker_metadata</code>: Extracts Docker container metadata, if applicable.</li>
+        <li><code>add_kubernetes_metadata</code>: Gathers Kubernetes-related metadata.</li>
+      </ul>
+      These processors enhance the collected metrics by adding contextual information, allowing for deeper insights and analysis.
+    </li>
+  </ol>
+</section>
+<section>
+  <h2>Data Sources and Data Shipping</h2>
+  <p>
+    Metricbeat retrieves data from various sources within our infrastructure, providing valuable insights into system performance.
+    On our Linux system, a significant portion of the data we collect originates from the <code>/proc</code> filesystem, which provides access to real-time information about the system and its processes.
+    Metricbeat leverages this rich data source to gather metrics such as CPU usage, memory utilization, disk I/O, network statistics, and more.
+    By monitoring the dynamic information exposed by <code>/proc</code>, Metricbeat enables us to closely track and analyze the behavior of our system.
+  </p>
+  <p>
+    Once Metricbeat has collected the metrics, it ships them to Elasticsearch for further processing and analysis.
+    The configured Elasticsearch output in Metricbeat allows for seamless data forwarding to the Elasticsearch cluster.
+    Metricbeat communicates with Elasticsearch using the defined host and port settings, which in our case is set to <code>localhost:9200</code>.
+    The collected metrics are transformed into Elasticsearch-friendly documents and indexed for efficient storage and retrieval.
+    This integration enables us to leverage Elasticsearch's powerful search and analytics capabilities to gain deep insights into the collected data.
+  </p>
+</section>
+<section>
+  <h3>System Module Configuration</h3>
+  <p>
+    The System module in Metricbeat allows us to collect important system-level metrics to monitor the health and performance of our Linux system. Let's delve into the configuration details of this module:
+  </p>
+
+  <h4>System Metrics Collection</h4>
+  <p>
+    The System module is configured to collect metrics at a regular interval defined by the <code>period</code> parameter. In this case, the metrics are collected every 10 seconds. The specific metrics collected are specified using the <code>metricsets</code> parameter, which includes the following:
+  </p>
+  <ul>
+    <li>CPU metrics: Provides insights into CPU usage and performance.</li>
+    <li>Load metrics: Offers information about the system load average.</li>
+    <li>Memory metrics: Collects data related to system memory utilization.</li>
+    <li>Network metrics: Captures network traffic and interface statistics.</li>
+  </ul>
+
+  <h4>Process Filtering</h4>
+  <p>
+    Additionally, the System module includes a <code>process.include_top_n</code> configuration, allowing us to specify the top processes we want to monitor based on CPU and memory usage. This feature helps us focus on the most resource-intensive processes and gain insights into their behavior.
+  </p>
+
+  <h4>Filesystem Metrics and Filtering</h4>
+  <p>
+    The System module is also configured to collect filesystem-related metrics. The metrics are collected every minute, as specified by the <code>period</code> parameter. The specific metrics collected include filesystem and filesystem statistics.
+  </p>
+  <p>
+    To filter out certain filesystems from being collected, we utilize processors to drop events based on regular expressions. The provided configuration drops events for filesystems that have mount points matching certain patterns, such as <code>^/(sys|cgroup|proc|dev|etc|host|lib|snap)($|/)</code>. This ensures that certain system-specific filesystems or directories are excluded from the metrics collection, focusing on the relevant filesystems of interest.
+  </p>
+
+  <h4>Uptime Metrics</h4>
+  <p>
+    Lastly, the System module includes a metricset for collecting uptime metrics. These metrics provide information about the system's uptime, indicating the length of time the system has been running since its last reboot. The metrics are collected every 15 minutes, as specified by the <code>period</code> parameter.
+  </p>
+
+  <h4>System Module Configuration</h4>
+  <pre>
+module: system
+  period: 10s
+  metricsets:
+    - cpu
+    - load
+    - memory
+    - network
+  process.include_top_n:
+
+- module: system
+  period: 1m
+  metricsets:
+    - filesystem
+    - fsstat
+  processors:
+  - drop_event.when.regexp:
+      system.filesystem.mount_point: '^/(sys|cgroup|proc|dev|etc|host|lib|snap)($|/)'
+
+- module: system
+  period: 15m
+  metricsets:
+    - uptime
+  </pre>
+
+  <p>
+    By configuring the System module in Metricbeat with these settings, we can effectively monitor and analyze various system-level metrics, gaining insights into the CPU, memory, network, filesystem, and uptime statistics of our Linux system.
+  </p>
+</section>
+<section>
+  <h3>Elasticsearch Module Configuration</h3>
+  <p>
+    The Elasticsearch module in Metricbeat allows us to collect important metrics from an Elasticsearch cluster, providing insights into its health and performance. Let's examine the configuration details of this module:
+  </p>
+
+  <h4>Elasticsearch Metrics Collection</h4>
+  <p>
+    The Elasticsearch module is configured to collect metrics at a regular interval defined by the <code>period</code> parameter. In this case, the metrics are collected every 10 seconds. The specific metrics collected are specified using the <code>metricsets</code> parameter, which includes the following:
+  </p>
+  <ul>
+    <li>Node metrics: Provides information about the Elasticsearch nodes, including their status, uptime, and resource usage.</li>
+    <li>Node stats: Collects detailed statistics about the Elasticsearch nodes, such as indexing, search, and caching performance.</li>
+  </ul>
+
+  <h4>Elasticsearch Connection Settings</h4>
+  <p>
+    The Elasticsearch module is configured to communicate with Elasticsearch running on the local machine. The <code>hosts</code> parameter is set to <code>["http://localhost:9200"]</code>, specifying the Elasticsearch instance's URL. This allows Metricbeat to establish a connection and retrieve the necessary metrics from Elasticsearch.
+  </p>
+
+  <h4>Elasticsearch Module Configuration</h4>
+  <pre>
+module: elasticsearch
+  metricsets:
+    - node
+    - node_stats
+  period: 10s
+  hosts: ["http://localhost:9200"]
+  </pre>
+
+  <p>
+    By configuring the Elasticsearch module in Metricbeat with these settings, we can effectively monitor and analyze various metrics related to our Elasticsearch cluster, gaining insights into the health, performance, and resource usage of our Elasticsearch environment.
+  </p>
+</section>
+
 								</div>
 							</div>
 

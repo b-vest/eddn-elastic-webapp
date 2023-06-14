@@ -23,7 +23,7 @@ const conf = {
 
   var rotationSpeed = 0.001;
   var uniforms = {
-    pointTexture: { value: new THREE.TextureLoader().load('../star.png')}
+    pointTexture: { value: new THREE.TextureLoader().load('../textures/star.png')}
   };
   const shaderMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms,
