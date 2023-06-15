@@ -15,7 +15,7 @@
 	<link rel="canonical" href="https://demo-basic.adminkit.io/" />
 
 	<title>BareMetal Bridge</title>
-
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
 	<link href="css/app.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
@@ -65,15 +65,208 @@
 					<div class="row">
 						<div class="col-12 col-lg-6">
 							<div class="card">
-								<h3>Events Line Chart</h3>
+								<div class="card-body">
+									<h3>Events Line Chart</h3>
 
-								<canvas id="eddn2DEventsLineChart"></canvas>
+									<canvas id="eddn2DEventsLineChart"></canvas>
+									<br>
+									<h3>How Does This Work?</h3>
+									<br>
+									<p>
+  Before we delve into the code, let's take a moment to understand what the <code>renderEventHistogram()</code> function does. This function is responsible for generating a line chart visualization that represents the occurrences of two specific event types: FSDJump and Scan. By visualizing the frequency and distribution of these events within the Elite Dangerous data set, we can gain insights into exploration patterns and activities.
+</p>
+
+<p>
+  Let's break down the code and see how it accomplishes this task. The function starts by preparing arrays for storing timestamps, FSD Jump events, and Scan events. These arrays will be used to populate the data for plotting the line chart.
+</p>
+
+<pre><code class="javascript hljs">
+// Render Event Histogram
+function renderEventHistogram(histogramData) {
+  // Prepare arrays for timestamps, FSD Jump events, and Scan events
+  const timestamps = [];
+  const fsdJumpData = [];
+  const scanData = [];
+
+  // Iterate through the histogramData buckets
+  for (const bucket of histogramData.Timestamp.buckets) {
+    // Extract the timestamp from the bucket and format it
+    const dateObject = new Date(bucket.key_as_string);
+    const dateHours = dateObject.getHours();
+    const dateMinutes = dateObject.getMinutes();
+    const dateSeconds = dateObject.getSeconds();
+    const thisTimestamp = dateHours + ":" + dateMinutes + ":" + dateSeconds;
+    timestamps.push(thisTimestamp);
+
+    // Iterate through the event buckets within each timestamp bucket
+    for (const eventBucket of bucket.Event.buckets) {
+      const eventName = eventBucket.key;
+      const eventCount = eventBucket.doc_count;
+
+      // Check the event type and populate the corresponding data arrays
+      if (eventName === "FSDJump") {
+        fsdJumpData.push(eventCount);
+      } else if (eventName === "Scan") {
+        scanData.push(eventCount);
+      }
+    }
+  }
+
+  // Configure chart data
+  const data = {
+    labels: timestamps,
+    datasets: [
+      {
+        label: 'FSD Jump Events',
+        data: fsdJumpData,
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
+        pointRadius: 0,
+        borderWidth: 2
+      },
+      {
+        label: 'Scan Events',
+        data: scanData,
+        fill: false,
+        borderColor: 'rgb(175, 92, 92)',
+        tension: 0.1,
+        pointRadius: 0,
+        borderWidth: 2,
+      }
+    ]
+  };
+
+  // Create a line chart using Chart.js library
+  new Chart(ctx, {
+    type: 'line',
+    data: data,
+    options: {
+      scales: {
+        xAxes: [{
+          position: 'bottom',
+          min: 0,
+          beginAtZero: true,
+          ticks: {
+            maxTicksLimit: 4,
+            maxRotation: 0,
+            minRotation: 0
+          }
+        }]
+      }
+    }
+  });
+}
+</code></pre>
+
+<p>
+  In the code, we start by iterating through the buckets in the <code>histogramData.Timestamp</code> array. For each bucket, we extract the timestamp, format it, and store it in the <code>timestamps</code> array. Then, we iterate through the <code>eventBucket</code> buckets within each timestamp bucket to retrieve the event name and its corresponding count. Depending on the event name, we push the count value into either the <code>fsdJumpData</code> array or the <code>scanData</code> array.
+</p>
+
+<p>
+  After populating the arrays, we configure the data for the line chart. The <code>data</code> object is structured with the <code>labels</code> array containing the timestamps and the <code>datasets</code> array containing two objects representing the FSD Jump and Scan events. Each object includes information such as the label, data values, line color, tension, point radius, and border width.
+</p>
+
+<p>
+  Finally, we create a line chart using the Chart.js library. We specify the chart type as "line" and provide the chart's configuration options and the prepared data. The options include scaling settings for the x-axis to ensure proper display of timestamps. With this code, we can generate a line chart that visualizes the occurrences of FSD Jump and Scan events over time in the Elite Dangerous data set.
+</p>
+
+
+								</div>
 							</div>
 						</div>
 						<div class="col-12 col-lg-6">
 							<div class="card">
-								<h3>Star Types Bar Chart</h3>
-								<canvas id="eddn2dBarChartStarTypes"></canvas>
+								<div class="card-body">
+									<h3>Star Types Bar Chart</h3>
+									<canvas id="eddn2dBarChartStarTypes"></canvas>
+									<br>
+									<h3>How Does This Work?</h3>
+									<br>
+ <p>
+  Now let's understand the code for the <code>renderStarTypeBarChart()</code> function. This function is responsible for generating a bar chart visualization that represents the distribution of star types within the Elite Dangerous data set. By visualizing the frequencies of different star types, we can gain insights into the stellar composition of the virtual universe.
+</p>
+
+<pre><code class="javascript hljs">
+// Render Star Type Bar Chart
+function renderStarTypeBarChart(starChartData) {
+  const ctx = document.getElementById('eddn2dBarChartStarTypes');
+
+  // Prepare arrays for labels, values, background colors, and border colors
+  const labels = [];
+  const values = [];
+  const backgroundColors = [];
+  const borderColors = [];
+
+  // Iterate through the starChartData buckets
+  for (const bucket of starChartData.StarType.buckets) {
+    console.log(bucket);
+    labels.push(bucket.key);
+    values.push(bucket.doc_count);
+
+    // Generate a random RGB color for each bucket
+    const randomColor = randomRgbColor();
+    backgroundColors.push('rgba(' + randomColor.join(',') + ', 0.2)');
+    borderColors.push('rgb(' + randomColor.join(',') + ')');
+  }
+
+  // Configure chart options and data
+  const config = {
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    },
+  };
+
+  const data = {
+    labels: labels,
+    datasets: [{
+      label: 'Star Type Bar Chart',
+      data: values,
+      backgroundColor: backgroundColors,
+      borderColor: borderColors,
+      borderWidth: 1
+    }]
+  };
+
+  // Create a bar chart using Chart.js library
+  new Chart(ctx, {
+    type: 'bar',
+    config,
+    data: data,
+  });
+
+  console.log(labels);
+}
+</code></pre>
+
+<p>
+  In the code, we start by retrieving the canvas element with the ID "eddn2dBarChartStarTypes" using the <code>getElementById()</code> method. This canvas will be the container for our bar chart.
+</p>
+
+<p>
+  Next, we initialize arrays to store the labels, values, background colors, and border colors for each bar in the chart. We then iterate through the <code>starChartData.StarType.buckets</code> array to extract the key (star type label) and the doc_count (frequency) for each bucket. We push these values into their respective arrays.
+</p>
+
+<p>
+  To add visual appeal, we generate a random RGB color using the <code>randomRgbColor()</code> function for each bar and store the background and border colors accordingly.
+</p>
+
+<p>
+  After preparing the data, we configure the chart options, including the scales configuration to ensure the y-axis starts from zero. The chart data is structured with the labels array and a single dataset containing the values, background colors, and border colors.
+</p>
+
+<p>
+  Finally, we create a bar chart using the Chart.js library by passing the canvas context, chart type as "bar", the chart configuration options, and the prepared data. The chart is then rendered within the specified canvas element.
+</p>
+
+<p>
+  Additionally, the function logs the labels array to the console for debugging purposes. This can be useful to verify the correctness of the data before rendering the chart.
+</p>
+					</div>
 							</div>
 						</div>
 					</div>
@@ -85,11 +278,14 @@
 	</div>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script src="js/app.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
 	<script src="js/site.js?v=6"></script>
 	<script src="js/eddn-2d.js?v=4"></script>
 	<script>    
 		document.addEventListener('DOMContentLoaded', function() {
       		loadMenu();
+      		hljs.highlightAll();
     	});
 	</script>
 
