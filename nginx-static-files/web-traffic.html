@@ -64,16 +64,16 @@
 					<div class="row">
 						<div class="col-12 col-lg-6">
 							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title">Traffic Source</h5>
-									<p>
-										While most of the metrics on this project site come from the local Elasticsearch server the traffic on this page is a bit different. Though this traffic still comes from Elasticsearch it actually comes from a Kubernetes based Elasticsearch 8 cluster that I run from my home lab.
-									</p>
+								<div class="card-body">
+									<h3>Events Line Chart</h3>
+
+									<canvas id="webTraffic"></canvas>
+									<br>
+									<h3>How Does This Work?</h3>
+									<br>
 								</div>
-									
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</main>
@@ -93,6 +93,7 @@
 	</div>
 	<script src="js/app.js"></script>
 	<script src="js/site.js?v=3"></script>
+	<script src="js/webtraffic.js?v=3"></script>
 	<script>    
 		document.addEventListener('DOMContentLoaded', function() {
       		loadMenu();

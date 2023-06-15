@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
@@ -18,8 +19,11 @@ const esClient = new Client({
 var runtimeObject = {
 	health: {},
   eddn2d:{},
-  systemmetrics: {}
+  systemmetrics: {},
+  queries:{}
 };
+
+const directoryPath = './es-queries';
 
 fetchAndStore();
 
@@ -79,6 +83,43 @@ server.listen(3000, () => {
 });
 
 
+async function loadQueries(directoryPath, runtimeObject) {
+  // Initialize queries object
+  var theseQueries = {};
+
+  try {
+    // Read files from the directory
+    const files = await fs.promises.readdir(directoryPath);
+
+    // Read and process each file
+    for (const file of files) {
+      const filePath = path.join(directoryPath, file);
+      const fileName = file.split('.')[0]; // Get the first part of the file name
+
+      // Read file content
+      const content = await readFile(filePath);
+
+      // Add file content to the queries object
+      theseQueries[fileName] = JSON.parse(content);
+    }
+    return theseQueries;
+    console.log('Queries:', runtimeObject.queries);
+  } catch (error) {
+    console.error('Error loading queries:', error);
+  }
+}
+
+function readFile(filePath) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err, content) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(content);
+      }
+    });
+  });
+}
 
 // Function to get the Elasticsearch health status
 async function getClusterHealth() {
@@ -117,54 +158,54 @@ async function getRawData(body,size){
 
 // Function to continuously fetch Elasticsearch health status and broadcast to WebSocket clients
 async function fetchAndStore() {
+
+  runtimeObject.queries = await loadQueries(directoryPath);
+  console.log(runtimeObject.queries);
+  
   const healthStatus = await getClusterHealth();
   if (healthStatus) {
   	runtimeObject['health'] = healthStatus;
   }
   runtimeObject['rawData'] = await getRawData("",100);
-  runtimeObject.eddn2d["eventLineHistogram"] = await getEventLineGraph();
 
-  const starMapRawData = await getStarMap();
+
+  runtimeObject.eddn2d["eventLineHistogram"] = await queryElasticsearch(runtimeObject.queries.getEventLineGraph);
+
+  const starMapRawData = await queryElasticsearch(runtimeObject.queries.starMapQuery);
   runtimeObject["starMapData"] = processStarMap(starMapRawData.hits.hits); 
+  runtimeObject.eddn2d["starTypeBarChart"] = await queryElasticsearch(runtimeObject.queries.getStarTypeCount);
+  runtimeObject.systemmetrics["systemCPU"] = await queryElasticsearch(runtimeObject.queries.systemCPUQuery);
+  runtimeObject.httpResponseHistogram = await queryElasticsearch(runtimeObject.queries.httpResponseHistogram);
+  runtimeObject.systemmetrics["systemLoad"] = await queryElasticsearch(runtimeObject.queries.systemLoadQuery);
 
-  runtimeObject.eddn2d["starTypeBarChart"] = await getStarTypeCount();
+  console.log(runtimeObject.systemmetrics.systemCPU);
 
-  runtimeObject.systemmetrics["systemLoad"] = await getSystemLoad();
-
-  runtimeObject.systemmetrics["systemCPU"] = await getSystemCPU();
 
 }
 
+async function queryElasticsearch(query){
 
+    try{
+      const rawData = await esClient.search(query);
+      return rawData.body;
 
-async function getSystemLoad() {
-  const systemLoadQuery = fs.readFileSync("./es-queries/systemLoadQuery.json");
-  const sendQuery = JSON.parse(systemLoadQuery);
-  try{
-    const rawData = await esClient.search(
-        sendQuery
-    );
-    return rawData.body;
-
-  } catch(error){
-    console.log(error)
-  }
-  return;
+    } catch(error){
+      console.log(error)
+    }
+    return;
 }
 
-async function getSystemCPU(){
-  const systemCPUQuery = fs.readFileSync("./es-queries/systemCPUQuery.json");
-  const sendQuery = JSON.parse(systemCPUQuery);
-  try{
-    const rawData = await esClient.search(
-        sendQuery
-    );
-    return rawData.body;
 
-  } catch(error){
-    console.log(error)
-  }
-  return;
+function readFile(filePath) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err, content) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(content);
+      }
+    });
+  });
 }
 
 
@@ -183,221 +224,6 @@ function processStarMap(starMapData){
 	}
 	return processedData;
 
-}
-
-async function getStarMap(){
-	const starQuery = {
-		"index": 'stellar_body_index',
-		"body":{
-  "track_total_hits": false,
-  "sort": [
-    {
-      "timestamp": {
-        "order": "desc",
-        "unmapped_type": "boolean"
-      }
-    }
-  ],
-  "fields": [
-    {
-      "field": "*",
-      "include_unmapped": "true"
-    },
-    {
-      "field": "timestamp",
-      "format": "strict_date_optional_time"
-    }
-  ],
-  "size": 9000,
-  "version": true,
-  "script_fields": {},
-  "stored_fields": [
-    "*"
-  ],
-  "runtime_mappings": {},
-  "_source": false,
-  "query": {
-    "bool": {
-      "must": [],
-      "filter": [
-        {
-          "bool": {
-            "filter": [
-              {
-                "bool": {
-                  "should": [
-                    {
-                      "match": {
-                        "event": "Scan"
-                      }
-                    }
-                  ],
-                  "minimum_should_match": 1
-                }
-              },
-              {
-                "bool": {
-                  "should": [
-                    {
-                      "exists": {
-                        "field": "StarType"
-                      }
-                    }
-                  ],
-                  "minimum_should_match": 1
-                }
-              },
-              {
-                "bool": {
-                  "should": [
-                    {
-                      "match": {
-                        "DistanceFromArrivalLS": "0.0"
-                      }
-                    }
-                  ],
-                  "minimum_should_match": 1
-                }
-              }
-            ]
-          }
-        }
-      ],
-      "should": [],
-      "must_not": []
-    }
-  }
-}
-};
-	try{
-		const rawData = await esClient.search(
-  			starQuery
-		);
-		return rawData.body;
-
-	} catch(error){
-		console.log(error)
-	}
-	return;
-
-}
-
-async function getStarTypeCount(){
-  const starTypeQuery = {
-    "index": 'stellar_body_index',
-    "body":{
-      "aggs": {
-        "StarType": {
-          "terms": {
-            "field": "StarType",
-            "order": {
-              "_count": "desc"
-            },
-            "size": 50
-          }
-        }
-      },
-      "size": 0,
-      "script_fields": {},
-      "stored_fields": [
-        "*"
-      ],
-      "runtime_mappings": {},
-      "query": {
-        "bool": {
-          "must": [],
-          "filter": [
-            {
-              "range": {
-                "timestamp": {
-                  "format": "strict_date_optional_time",
-                  "gte": "now-1h/h",
-                  "lte": "now/h"
-                }
-              }
-            }
-          ],
-          "should": [],
-          "must_not": []
-        }
-      }
-    }
-  };
-  try{
-    const rawData = await esClient.search(
-        starTypeQuery
-    );
-    return rawData.body;
-
-  } catch(error){
-    console.log(error)
-  }
-  return;
-}
-
-
-async function getEventLineGraph(){
-	const lineQuery =	{
-		"index": 'stellar_body_index',
-		"body":{
-  		"aggs": {
-    		"Timestamp": {
-      			"date_histogram": {
-        			"field": "timestamp",
-        			"calendar_interval": "1m",
-        			"time_zone": "America/New_York",
-        			"min_doc_count": 1
-      			},
-      			"aggs": {
-        			"Event": {
-          				"terms": {
-            				"field": "event",
-            				"order": {
-              					"_count": "desc"
-            				},
-            				"size": 5
-          				}
-      				}
-      			}
-    		}
-  		},
-  		"size": 0,
-  		"script_fields": {},
-  		"stored_fields": [
-    		"*"
-  		],
-  		"runtime_mappings": {},
-  		"query": {
-    		"bool": {
-      			"must": [],
-      			"filter": [
-      				{
-          				"range": {
-            				"timestamp": {
-              					"format": "strict_date_optional_time",
-              					"gte": "now-1h/h",
-              					"lte": "now/h"
-            				}
-          				}
-        			}
-      			],
-      			"should": [],
-      			"must_not": []
-    		}
-  		}
-	}
-};
-
-	try{
-		const rawData = await esClient.search(
-  			lineQuery
-		);
-		return rawData.body;
-
-	} catch(error){
-		console.log(error)
-	}
-	return;
 }
 
 
