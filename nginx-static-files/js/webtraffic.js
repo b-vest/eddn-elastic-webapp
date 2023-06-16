@@ -11,38 +11,21 @@ socket.addEventListener('open', function (event) {
 socket.addEventListener('message', function (event) {
   //console.log('Message from server:', event);
   const serverData = JSON.parse(event.data);
-  console.log(serverData);
+  //console.log(serverData);
   if(serverData.function === "renderWebTrafficmetrics"){
     renderHTTPResponseChart(serverData.httpResponseMetrics);
   }
 });
 
 
-function renderHTTPResponseChart(trafficArrays){
-	var datasets = [];
+async function renderHTTPResponseChart(trafficArrays){
   	const ctx = document.getElementById('webTraffic');
-  	const timestamps = trafficArrays.timestamps;
-  	delete trafficArrays.timestamps;
-	for (const response in trafficArrays) {  
-		var thisDataset = {
-  	    	label: response,
-        	data: trafficArrays[response],
-        	fill: false,
-        	borderColor: 'rgb('+randomIntBetween(128, 254)+', '+randomIntBetween(128, 254)+','+randomIntBetween(128, 254)+')',
-        	tension: 0.1,
-        	pointRadius: 0,
-        	borderWidth: 2
-    	};
-    	datasets.push(thisDataset);
-	}
-   console.log(datasets);
-     const data = {
-    	labels: timestamps,
-    	datasets: datasets
-	}
-	new Chart(ctx, {
+  	trafficArrays.labels = trafficArrays.labels.map(convertToLocalTime);
+
+  	console.log(trafficArrays.labels);
+  	new Chart(ctx, {
     type: 'line',
-    data: data,
+    data: trafficArrays,
     options: {
       scales: {
         xAxes: [{
@@ -50,7 +33,7 @@ function renderHTTPResponseChart(trafficArrays){
           min: 0, // My use case requires starting at zero
           beginAtZero: true,
           ticks: {
-            maxTicksLimit: 4,
+            maxTicksLimit: 6,
             maxRotation: 0,
             minRotation: 0
           }
@@ -66,3 +49,10 @@ function randomIntBetween(min,max){
   return thisRandom;
 }  
 
+
+function convertToLocalTime(utcTimestamp) {
+	console.log("Converting Time");
+  const timePieces = new Date(utcTimestamp).toLocaleString();
+  const timeArray = timePieces.split(",");
+  return timeArray[1];
+}

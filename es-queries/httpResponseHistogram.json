@@ -6,17 +6,16 @@
       "date_histogram": {
         "field": "@timestamp",
         "calendar_interval": "1m",
-        "time_zone": "America/New_York",
-        "min_doc_count": 1
+        "min_doc_count": 1,
+        "order": {
+          "_key": "asc"
+        }
       },
       "aggs": {
         "HTTPResponse": {
           "terms": {
             "field": "http.response.status_code",
-            "order": {
-              "_count": "desc"
-            },
-            "size": 5
+            "size": 15
           }
         }
       }
@@ -36,7 +35,7 @@
           "range": {
             "@timestamp": {
               "format": "strict_date_optional_time",
-              "gte": "now-1h/h",
+              "gte": "now-24h/h",
               "lte": "now/h"
             }
           }

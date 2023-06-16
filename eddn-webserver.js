@@ -163,48 +163,62 @@ async function fetchAndStore() {
 }
 
 async function processHistogram(histogramData){
-  console.log(histogramData);
-  try{
-    var dataArrays = {
-      timestamps: []
-    };
-    for (const bucket of histogramData.aggregations.Timestamp.buckets) {
-      //console.log(bucket);
-      const dateObject = new Date(bucket.key_as_string);
-      var dateHours = dateObject.getHours();
-      var dateMinutes = dateObject.getMinutes();
-      var dateSeconds = dateObject.getSeconds();
-      if (dateMinutes <= 9) {
-        dateMinutes = "0" + dateMinutes;
-      }
-      if (dateHours <= 9) {
-        dateHours = "0" + dateSeconds;
-      }
-      if (dateSeconds <= 9) {
-        dateSeconds = "0" + dateSeconds;
-      }
-      const thisTimesatamp = dateHours + ":" + dateMinutes + ":" + dateSeconds;
-
-      dataArrays.timestamps.push(thisTimesatamp);
-      for (const timestampBucket of bucket.HTTPResponse.buckets) {
-        //console.log(timestampBucket);
-        if(!dataArrays[timestampBucket.key]){
-            dataArrays[timestampBucket.key] = [];
-            dataArrays[timestampBucket.key].push(timestampBucket.doc_count);
-        }else{
-          dataArrays[timestampBucket.key].push(timestampBucket.doc_count);
+    console.log(histogramData);
+    try{
+        var dataArrays = {
+            timestamps: []
+        };
+        for (const bucket of histogramData.aggregations.Timestamp.buckets) {
+            dataArrays.timestamps.push(bucket.key_as_string);
+            for (const timestampBucket of bucket.HTTPResponse.buckets) {
+                if(!dataArrays[timestampBucket.key]){
+                    dataArrays[timestampBucket.key] = new Array(dataArrays.timestamps.length - 1).fill(0);
+                }else{
+                    while(dataArrays[timestampBucket.key].length < dataArrays.timestamps.length - 1){
+                        dataArrays[timestampBucket.key].push(0);
+                    }
+                }
+                dataArrays[timestampBucket.key].push(timestampBucket.doc_count);
+            }
         }
 
-      }
+        for (const response in dataArrays) {
+            if(response !== 'timestamps'){
+                while(dataArrays[response].length < dataArrays.timestamps.length){
+                    dataArrays[response].push(0);
+                }
+            }
+        }
+
+        const datasets = [];
+        const timestamps = dataArrays.timestamps;
+
+        delete dataArrays.timestamps;
+
+        for (const response in dataArrays) {  
+            var thisDataset = {
+                label: response,
+                data: dataArrays[response],
+                fill: false,
+                borderColor: 'rgb('+randomIntBetween(10, 250)+', '+randomIntBetween(20, 100)+','+randomIntBetween(50, 120)+')',
+                tension: 0.1,
+                pointRadius: 0,
+                borderWidth: 1
+            };
+            datasets.push(thisDataset);
+        }
+
+        const data = {
+            labels: timestamps,
+            datasets: datasets
+        }
+
+        return data;
+
+    }catch(error){
+        console.log(error);
     }
-    //console.log(dataArrays);
-    return dataArrays;
-  }catch(error){
-    console.log(error);
-  }
-  return;
-
-
+    return;
 }
 
 async function queryElasticsearch(query){
@@ -272,6 +286,16 @@ function processStarMap(starMapData){
 	return processedData;
 
 }
+function convertToLocalTime(utcTimestamp) {
+  const timePieces = new Date(utcTimestamp).toLocaleString();
+  const timeArray = timePieces.split(",");
+  return timeArray[1];
+}
+
+function randomIntBetween(min,max){
+  var thisRandom = Math.floor(Math.random()*(max - min + 1)) + min
+  return thisRandom;
+}  
 
 
 // Schedule the function to run every 5 seconds
