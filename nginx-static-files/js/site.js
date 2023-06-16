@@ -24,7 +24,11 @@ function loadMenu() {
             feather.replace();
 
             var fileName = location.pathname.split("/").slice(-1)
-            console.log(fileName);
+            console.log(fileName[0]);
+            if(!fileName[0]){
+                console.log("No File");
+                fileName[0] = "index.html"
+            }
             var sidebarItem = document.getElementById(fileName[0]);
             sidebarItem.className += ' active';
 

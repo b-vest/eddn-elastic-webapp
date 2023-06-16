@@ -71,6 +71,13 @@ wss.on('connection', (ws) => {
       }
       ws.send(JSON.stringify(sendObject));
     }
+    if(fromClient.function === "sendWebTrafficData"){
+      const sendObject = {
+        function: "renderWebTrafficmetrics",
+        httpResponseMetrics: runtimeObject.httpResponseHistogram
+      }
+      ws.send(JSON.stringify(sendObject));
+    }
   });
 
   // Send WebSocket messages
@@ -83,43 +90,7 @@ server.listen(3000, () => {
 });
 
 
-async function loadQueries(directoryPath, runtimeObject) {
-  // Initialize queries object
-  var theseQueries = {};
 
-  try {
-    // Read files from the directory
-    const files = await fs.promises.readdir(directoryPath);
-
-    // Read and process each file
-    for (const file of files) {
-      const filePath = path.join(directoryPath, file);
-      const fileName = file.split('.')[0]; // Get the first part of the file name
-
-      // Read file content
-      const content = await readFile(filePath);
-
-      // Add file content to the queries object
-      theseQueries[fileName] = JSON.parse(content);
-    }
-    return theseQueries;
-    console.log('Queries:', runtimeObject.queries);
-  } catch (error) {
-    console.error('Error loading queries:', error);
-  }
-}
-
-function readFile(filePath) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, 'utf8', (err, content) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(content);
-      }
-    });
-  });
-}
 
 // Function to get the Elasticsearch health status
 async function getClusterHealth() {
@@ -160,7 +131,6 @@ async function getRawData(body,size){
 async function fetchAndStore() {
 
   runtimeObject.queries = await loadQueries(directoryPath);
-  console.log(runtimeObject.queries);
   
   const healthStatus = await getClusterHealth();
   if (healthStatus) {
@@ -169,16 +139,70 @@ async function fetchAndStore() {
   runtimeObject['rawData'] = await getRawData("",100);
 
 
-  runtimeObject.eddn2d["eventLineHistogram"] = await queryElasticsearch(runtimeObject.queries.getEventLineGraph);
 
   const starMapRawData = await queryElasticsearch(runtimeObject.queries.starMapQuery);
   runtimeObject["starMapData"] = processStarMap(starMapRawData.hits.hits); 
+
   runtimeObject.eddn2d["starTypeBarChart"] = await queryElasticsearch(runtimeObject.queries.getStarTypeCount);
   runtimeObject.systemmetrics["systemCPU"] = await queryElasticsearch(runtimeObject.queries.systemCPUQuery);
-  runtimeObject.httpResponseHistogram = await queryElasticsearch(runtimeObject.queries.httpResponseHistogram);
-  runtimeObject.systemmetrics["systemLoad"] = await queryElasticsearch(runtimeObject.queries.systemLoadQuery);
+  
 
-  console.log(runtimeObject.systemmetrics.systemCPU);
+ //runtimeObject.httpResponseHistogram = await queryElasticsearch(runtimeObject.queries.httpResponseHistogram);
+
+  const rawResponseData = await queryElasticsearch(runtimeObject.queries.httpResponseHistogram);
+  //console.log(rawResponseData);
+  runtimeObject.httpResponseHistogram = await processHistogram(rawResponseData);
+  //console.log(runtimeObject.httpResponseHistogram);
+
+  runtimeObject.systemmetrics["systemLoad"] = await queryElasticsearch(runtimeObject.queries.systemLoadQuery);
+  runtimeObject.eddn2d["eventLineHistogram"] = await queryElasticsearch(runtimeObject.queries.getEventLineGraph);
+
+  //console.log(runtimeObject.httpResponseHistogram);
+
+
+}
+
+async function processHistogram(histogramData){
+  console.log(histogramData);
+  try{
+    var dataArrays = {
+      timestamps: []
+    };
+    for (const bucket of histogramData.aggregations.Timestamp.buckets) {
+      //console.log(bucket);
+      const dateObject = new Date(bucket.key_as_string);
+      var dateHours = dateObject.getHours();
+      var dateMinutes = dateObject.getMinutes();
+      var dateSeconds = dateObject.getSeconds();
+      if (dateMinutes <= 9) {
+        dateMinutes = "0" + dateMinutes;
+      }
+      if (dateHours <= 9) {
+        dateHours = "0" + dateSeconds;
+      }
+      if (dateSeconds <= 9) {
+        dateSeconds = "0" + dateSeconds;
+      }
+      const thisTimesatamp = dateHours + ":" + dateMinutes + ":" + dateSeconds;
+
+      dataArrays.timestamps.push(thisTimesatamp);
+      for (const timestampBucket of bucket.HTTPResponse.buckets) {
+        //console.log(timestampBucket);
+        if(!dataArrays[timestampBucket.key]){
+            dataArrays[timestampBucket.key] = [];
+            dataArrays[timestampBucket.key].push(timestampBucket.doc_count);
+        }else{
+          dataArrays[timestampBucket.key].push(timestampBucket.doc_count);
+        }
+
+      }
+    }
+    //console.log(dataArrays);
+    return dataArrays;
+  }catch(error){
+    console.log(error);
+  }
+  return;
 
 
 }
@@ -195,6 +219,31 @@ async function queryElasticsearch(query){
     return;
 }
 
+async function loadQueries(directoryPath, runtimeObject) {
+  // Initialize queries object
+  var theseQueries = {};
+
+  try {
+    // Read files from the directory
+    const files = await fs.promises.readdir(directoryPath);
+
+    // Read and process each file
+    for (const file of files) {
+      const filePath = path.join(directoryPath, file);
+      const fileName = file.split('.')[0]; // Get the first part of the file name
+
+      // Read file content
+      const content = await readFile(filePath);
+
+      // Add file content to the queries object
+      theseQueries[fileName] = JSON.parse(content);
+    }
+    return theseQueries;
+    //console.log('Queries:', runtimeObject.queries);
+  } catch (error) {
+    console.error('Error loading queries:', error);
+  }
+}
 
 function readFile(filePath) {
   return new Promise((resolve, reject) => {
@@ -207,8 +256,6 @@ function readFile(filePath) {
     });
   });
 }
-
-
 
 function processStarMap(starMapData){
 

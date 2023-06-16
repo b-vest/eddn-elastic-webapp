@@ -1,5 +1,5 @@
 {
-  "index": "metricbeat-*",
+  "index": "filebeat-*",
   "body":{  
   "aggs": {
     "Timestamp": {
