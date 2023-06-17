@@ -23,6 +23,22 @@ var runtimeObject = {
   queries:{}
 };
 
+const colorsArray = [
+  'rgba(0,128,0)', // Green
+  'rgba(0,0,255)', // Blue
+  'rgba(128,0,128)', // Purple
+  'rgba(255,0,0)', // Red
+  'rgba(255,165,0)', // Orange
+  'rgba(255,255,0)', // Yellow
+  'rgba(0,255,255)', // Cyan
+  'rgba(255,0,255)', // Magenta
+  'rgba(192,192,192)', // Silver
+  'rgba(128,128,128)', // Gray
+  'rgba(128,0,0)', // Maroon
+  'rgba(128,128,0)', // Olive
+  'rgba(0,128,128)', // Teal
+];
+
 const directoryPath = './es-queries';
 
 fetchAndStore();
@@ -150,20 +166,16 @@ async function fetchAndStore() {
  //runtimeObject.httpResponseHistogram = await queryElasticsearch(runtimeObject.queries.httpResponseHistogram);
 
   const rawResponseData = await queryElasticsearch(runtimeObject.queries.httpResponseHistogram);
-  //console.log(rawResponseData);
   runtimeObject.httpResponseHistogram = await processHistogram(rawResponseData);
-  //console.log(runtimeObject.httpResponseHistogram);
 
   runtimeObject.systemmetrics["systemLoad"] = await queryElasticsearch(runtimeObject.queries.systemLoadQuery);
   runtimeObject.eddn2d["eventLineHistogram"] = await queryElasticsearch(runtimeObject.queries.getEventLineGraph);
 
-  //console.log(runtimeObject.httpResponseHistogram);
 
 
 }
 
 async function processHistogram(histogramData){
-    console.log(histogramData);
     try{
         var dataArrays = {
             timestamps: []
@@ -195,12 +207,12 @@ async function processHistogram(histogramData){
 
         delete dataArrays.timestamps;
 
-        for (const response in dataArrays) {  
+        for (const response in dataArrays) {
             var thisDataset = {
                 label: response,
                 data: dataArrays[response],
                 fill: false,
-                borderColor: 'rgb('+randomIntBetween(10, 250)+', '+randomIntBetween(20, 100)+','+randomIntBetween(50, 120)+')',
+                borderColor: colorsArray[datasets.length],
                 tension: 0.1,
                 pointRadius: 0,
                 borderWidth: 1
@@ -253,7 +265,6 @@ async function loadQueries(directoryPath, runtimeObject) {
       theseQueries[fileName] = JSON.parse(content);
     }
     return theseQueries;
-    //console.log('Queries:', runtimeObject.queries);
   } catch (error) {
     console.error('Error loading queries:', error);
   }

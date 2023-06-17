@@ -35,7 +35,7 @@
           "range": {
             "@timestamp": {
               "format": "strict_date_optional_time",
-              "gte": "now-24h/h",
+              "gte": "now-1h/h",
               "lte": "now/h"
             }
           }

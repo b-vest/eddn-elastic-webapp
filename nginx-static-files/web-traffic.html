@@ -59,15 +59,21 @@
 
 			<main class="content">
 				<div class="container-fluid p-0">
-
-					<h1 class="h3 mb-3"><strong>EDDN WebApp Web Traffic</strong></h1>
+				<div style="display: flex; align-items: center; justify-content: space-between;">					
+					<h1 class="h3 mb-3" ><strong>EDDN WebApp Web Traffic</strong></h1>
+					<button id="updateButton" type="button" class="btn btn-primary">Enable Realtime Updates</button>
+					</div>
 					<div class="row">
+
 						<div class="col-12 col-lg-6">
 							<div class="card">
 								<div class="card-body">
 									<h3>HTTP Response Codes</h3>
-
+								</div>
+								<div>
 									<canvas id="webTraffic"></canvas>
+								</div>
+								<div class="card-body">
 									<br>
 									<h3>How Does This Work?</h3>
 									<br>
@@ -93,7 +99,7 @@
 	</div>
 	<script src="js/app.js"></script>
 	<script src="js/site.js?v=3"></script>
-	<script src="js/webtraffic.js?v=9"></script>
+	<script src="js/webtraffic.js?v=15"></script>
 	<script>    
 		document.addEventListener('DOMContentLoaded', function() {
       		loadMenu();
