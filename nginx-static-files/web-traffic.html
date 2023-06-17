@@ -15,6 +15,7 @@
 	<link rel="canonical" href="https://demo-basic.adminkit.io/" />
 
 	<title>BareMetal Bridge</title>
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
 
 	<link href="css/app.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -75,8 +76,128 @@
 								</div>
 								<div class="card-body">
 									<br>
-									<h3>How Does This Work?</h3>
+									<h2>How Does This Work?</h2>
 									<br>
+									<h3>Websocket Server Side</h3>
+									  <p>
+                The following code defines an asynchronous function called <code>processHistogram</code>. This function takes a parameter <code>histogramData</code> and processes it to generate a histogram. The histogram data will be returned in a specific format suitable for charting libraries.
+            </p>
+<pre><code class="javascript hljs">
+async function processHistogram(histogramData) {
+    try {
+        // Initialize an object to store the histogram data arrays
+        var dataArrays = {
+            timestamps: [] // Initialize an array to store timestamps
+        };
+
+        // Iterate over each bucket in histogramData.aggregations.Timestamp.buckets
+        for (const bucket of histogramData.aggregations.Timestamp.buckets) {
+            // Push the key_as_string value to the timestamps array
+            dataArrays.timestamps.push(bucket.key_as_string);
+
+            // Iterate over each timestampBucket in bucket.HTTPResponse.buckets
+            for (const timestampBucket of bucket.HTTPResponse.buckets) {
+                // If the key does not exist in dataArrays, create a new array of zeros
+                if (!dataArrays[timestampBucket.key]) {
+                    dataArrays[timestampBucket.key] = new Array(dataArrays.timestamps.length - 1).fill(0);
+                } else {
+                    // If the key already exists but is shorter than the timestamps array, pad it with zeros
+                    while (dataArrays[timestampBucket.key].length < dataArrays.timestamps.length - 1) {
+                        dataArrays[timestampBucket.key].push(0);
+                    }
+                }
+                // Push the doc_count to the respective data array
+                dataArrays[timestampBucket.key].push(timestampBucket.doc_count);
+            }
+        }
+
+        // Pad the remaining data arrays to match the length of the timestamps array
+        for (const response in dataArrays) {
+            if (response !== 'timestamps') {
+                while (dataArrays[response].length < dataArrays.timestamps.length) {
+                    dataArrays[response].push(0);
+                }
+            }
+        }
+
+        // Initialize an array to store the datasets for the chart
+        const datasets = [];
+
+        // Store the timestamps array
+        const timestamps = dataArrays.timestamps;
+
+        // Delete the timestamps key from dataArrays
+        delete dataArrays.timestamps;
+
+        // Iterate over each key in dataArrays to create the datasets
+        for (const response in dataArrays) {
+            // Create a dataset object with label, data, and styling properties
+            var thisDataset = {
+                label: response,
+                data: dataArrays[response],
+                fill: false,
+                borderColor: colorsArray[datasets.length],
+                tension: 0.1,
+                pointRadius: 0,
+                borderWidth: 1
+            };
+            // Push the dataset to the datasets array
+            datasets.push(thisDataset);
+        }
+
+        // Create the final data object containing labels and datasets
+        const data = {
+            labels: timestamps,
+            datasets: datasets
+        };
+
+        // Return the generated data
+        return data;
+    } catch (error) {
+        // Log any errors to the console
+        console.log(error);
+    }
+    // Return nothing if an error occurs
+    return;
+}
+</code></pre>
+
+            <p>
+                On the server side this function creates an object named <code>dataArrays</code> to store the histogram data arrays. It starts with an empty array named <code>timestamps</code>, which will store the timestamps for the chart.
+            </p>
+            <p>
+                The code iterates over each bucket in <code>histogramData.aggregations.Timestamp.buckets</code>. It extracts the <code>key_as_string</code> value from each bucket and pushes it into the <code>timestamps</code> array. These timestamps will be used as labels on the x-axis of the chart.
+            </p>
+            <p>
+                Within the same loop, there is an inner loop that iterates over each <code>timestampBucket</code> in <code>bucket.HTTPResponse.buckets</code>. It checks if the current <code>timestampBucket.key</code> exists as a key in <code>dataArrays</code>. If not, it creates a new array with a length of <code>dataArrays.timestamps.length - 1</code> and fills it with zeros. This ensures that each data array has a consistent length and aligns with the timestamps.
+            </p>
+            <p>
+                If the key already exists but is shorter than the timestamps array, it pads it with zeros. This step ensures that each data array has the same length as the timestamps array, enabling proper charting.
+            </p>
+            <p>
+                After the loops, the code pads the remaining data arrays in <code>dataArrays</code> to match the length of the timestamps array. This step ensures that all data arrays have the same length for consistency.
+            </p>
+            <p>
+                An empty array named <code>datasets</code> is initialized to store the datasets for the chart. Each dataset corresponds to a unique response type.
+            </p>
+            <p>
+                The timestamps array is stored separately for later use, and the timestamps key is deleted from <code>dataArrays</code> to avoid duplication.
+            </p>
+            <p>
+                The code then iterates over each key in <code>dataArrays</code> (excluding 'timestamps') to create the datasets. For each key, a dataset object is created with a label, data array, and various styling properties. The <code>colorsArray</code> is used to determine the border color of each dataset, and the <code>datasets.length</code> is used as an index to select a color.
+            </p>
+            <p>
+                Each dataset is pushed to the datasets array.
+            </p>
+            <p>
+                Finally, the code creates a <code>data</code> object that contains the labels (timestamps) and the datasets array. This object represents the final data structure suitable for charting libraries.
+            </p>
+            <p>
+                The <code>data</code> object is returned as the result of the function.
+            </p>
+            <p>
+                If an error occurs during the execution, it is caught in the <code>catch</code> block, logged to the console for debugging purposes, and the function returns <code>undefined</code>.
+            </p>
 								</div>
 							</div>
 						</div>
@@ -98,11 +219,14 @@
 		</div>
 	</div>
 	<script src="js/app.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 	<script src="js/site.js?v=3"></script>
 	<script src="js/webtraffic.js?v=15"></script>
 	<script>    
 		document.addEventListener('DOMContentLoaded', function() {
       		loadMenu();
+      		hljs.highlightAll();
+
     	});
 	</script>
 
