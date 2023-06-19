@@ -183,8 +183,6 @@ function processRawCounterHistogram(histogramData,divisor) {
       timestamps: [],
       counters: {}
     };
-
-    console.log(divisor);
     for (const bucket of histogramData.aggregations.Timestamp.buckets) {
       dataArrays.timestamps.push(bucket.key_as_string);
 
