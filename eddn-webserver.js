@@ -29,7 +29,6 @@ const colorsArray = [
   'rgba(128,0,128)', // Purple
   'rgba(255,0,0)', // Red
   'rgba(255,165,0)', // Orange
-  'rgba(255,255,0)', // Yellow
   'rgba(0,255,255)', // Cyan
   'rgba(255,0,255)', // Magenta
   'rgba(192,192,192)', // Silver
@@ -49,52 +48,57 @@ app.use(express.static('public'));
 // WebSocket connection handling
 wss.on('connection', (ws) => {
   // Handle WebSocket events
-  ws.on('message', (message) => {
-    // Process WebSocket messages
-    const fromClient = JSON.parse(message);
-    if(fromClient.function === "sendHealth"){
-    	const sendObject = {
-    		function: "renderHealth",
-    		health: runtimeObject.health
-    	}
-    	ws.send(JSON.stringify(sendObject));
-    }
-    if(fromClient.function === "sendRawData"){
-    	const sendObject = {
-    		function: "renderRawData",
-    		rawData: runtimeObject.rawData
-    	}
-    	ws.send(JSON.stringify(sendObject));
-    }
-    if(fromClient.function === "sendInitial2dDataload"){
-    	const sendObject = {
-    		function: "renderAllEDDN2D",
-    		eddn2d: runtimeObject.eddn2d
-    	}
-    	ws.send(JSON.stringify(sendObject));
-    }
-    if(fromClient.function === "bootstrapStarMap"){
-    	const sendObject = {
-    		function: "renderStarMap",
-    		starMapData: runtimeObject.starMapData
-    	}
-    	ws.send(JSON.stringify(sendObject));
-    }
-    if(fromClient.function === "sendSystemStats"){
-      const sendObject = {
-        function: "rendrSystemStats",
+
+ws.on('message', (message) => {
+  // Process WebSocket messages
+  const fromClient = JSON.parse(message);
+  let sendObject;
+
+  switch (fromClient.function) {
+    case 'sendHealth':
+      sendObject = {
+        function: 'renderHealth',
+        health: runtimeObject.health
+      };
+      break;
+    case 'sendRawData':
+      sendObject = {
+        function: 'renderRawData',
+        rawData: runtimeObject.rawData
+      };
+      break;
+    case 'sendInitial2dDataload':
+      sendObject = {
+        function: 'renderAllEDDN2D',
+        eddn2d: runtimeObject.eddn2d
+      };
+      break;
+    case 'bootstrapStarMap':
+      sendObject = {
+        function: 'renderStarMap',
+        starMapData: runtimeObject.starMapData
+      };
+      break;
+    case 'sendSystemStats':
+      sendObject = {
+        function: 'rendrSystemStats',
         systemMetrics: runtimeObject.systemmetrics
-      }
-      ws.send(JSON.stringify(sendObject));
-    }
-    if(fromClient.function === "sendWebTrafficData"){
-      const sendObject = {
-        function: "renderWebTrafficmetrics",
+      };
+      break;
+    case 'sendWebTrafficData':
+      sendObject = {
+        function: 'renderWebTrafficmetrics',
         httpResponseMetrics: runtimeObject.httpResponseHistogram
-      }
-      ws.send(JSON.stringify(sendObject));
-    }
-  });
+      };
+      break;
+    default:
+      break;
+  }
+
+  if (sendObject) {
+    ws.send(JSON.stringify(sendObject));
+  }
+});
 
   // Send WebSocket messages
   //ws.send('Connected to WebSocket server');
@@ -145,44 +149,111 @@ async function getRawData(body,size){
 
 // Function to continuously fetch Elasticsearch health status and broadcast to WebSocket clients
 async function fetchAndStore() {
-
   runtimeObject.queries = await loadQueries(directoryPath);
-  
-  const healthStatus = await getClusterHealth();
+
+  const [healthStatus, rawData, starMapRawData, starTypeBarChart, rawResponseData, systemCPURaw, systemLoadRaw] = await Promise.all([
+    getClusterHealth(),
+    getRawData("", 100),
+    queryElasticsearch(runtimeObject.queries.starMapQuery),
+    queryElasticsearch(runtimeObject.queries.getStarTypeCount),
+    queryElasticsearch(runtimeObject.queries.httpResponseHistogram),
+    queryElasticsearch(runtimeObject.queries.systemCPUQuery),
+    queryElasticsearch(runtimeObject.queries.systemLoadQuery)
+
+  ]);
+
   if (healthStatus) {
-  	runtimeObject['health'] = healthStatus;
+    runtimeObject.health = healthStatus;
   }
-  runtimeObject['rawData'] = await getRawData("",100);
 
-
-
-  const starMapRawData = await queryElasticsearch(runtimeObject.queries.starMapQuery);
-  runtimeObject["starMapData"] = processStarMap(starMapRawData.hits.hits); 
-
-  runtimeObject.eddn2d["starTypeBarChart"] = await queryElasticsearch(runtimeObject.queries.getStarTypeCount);
-  runtimeObject.systemmetrics["systemCPU"] = await queryElasticsearch(runtimeObject.queries.systemCPUQuery);
+  runtimeObject.starMapData = processStarMap(starMapRawData.hits.hits);
+  runtimeObject.eddn2d.starTypeBarChart = starTypeBarChart;
   
+  runtimeObject.systemmetrics.systemCPU = processRawCounterHistogram(systemCPURaw, "1");
+  runtimeObject.systemmetrics.systemLoad = processRawCounterHistogram(systemLoadRaw,"10");
 
- //runtimeObject.httpResponseHistogram = await queryElasticsearch(runtimeObject.queries.httpResponseHistogram);
-
-  const rawResponseData = await queryElasticsearch(runtimeObject.queries.httpResponseHistogram);
-  runtimeObject.httpResponseHistogram = await processHistogram(rawResponseData);
-
-  runtimeObject.systemmetrics["systemLoad"] = await queryElasticsearch(runtimeObject.queries.systemLoadQuery);
-  runtimeObject.eddn2d["eventLineHistogram"] = await queryElasticsearch(runtimeObject.queries.getEventLineGraph);
-
-
-
+  runtimeObject.httpResponseHistogram = await processDocCountHistogram(rawResponseData, "HTTPResponse");
+  runtimeObject.eddn2d.eventLineHistogram = await queryElasticsearch(runtimeObject.queries.getEventLineGraph);
 }
 
-async function processHistogram(histogramData){
+
+function processRawCounterHistogram(histogramData,divisor) {
+  try {
+    var dataArrays = {
+      timestamps: [],
+      counters: {}
+    };
+
+    console.log(divisor);
+    for (const bucket of histogramData.aggregations.Timestamp.buckets) {
+      dataArrays.timestamps.push(bucket.key_as_string);
+
+      for (const counterKey in bucket) {
+        if (counterKey !== "key_as_string" && counterKey !== "key" && counterKey !== "doc_count") {
+          if (!dataArrays.counters[counterKey]) {
+            dataArrays.counters[counterKey] = new Array(
+              dataArrays.timestamps.length - 1
+            ).fill(0);
+          } else {
+            while (
+              dataArrays.counters[counterKey].length <
+              dataArrays.timestamps.length - 1
+            ) {
+              dataArrays.counters[counterKey].push(0);
+            }
+          }
+
+          dataArrays.counters[counterKey].push(bucket[counterKey].value/divisor);
+        }
+      }
+    }
+
+    for (const counterKey in dataArrays.counters) {
+      while (
+        dataArrays.counters[counterKey].length < dataArrays.timestamps.length
+      ) {
+        dataArrays.counters[counterKey].push(0);
+      }
+    }
+
+    const datasets = [];
+    const timestamps = dataArrays.timestamps;
+
+    delete dataArrays.timestamps;
+
+    for (const counterKey in dataArrays.counters) {
+      var thisDataset = {
+        label: counterKey,
+        data: dataArrays.counters[counterKey],
+        fill: false,
+        borderColor: colorsArray[datasets.length],
+        tension: 0.1,
+        pointRadius: 0,
+        borderWidth: 1
+      };
+      datasets.push(thisDataset);
+    }
+
+    const data = {
+      labels: timestamps,
+      datasets: datasets
+    };
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+  return;
+}
+
+async function processDocCountHistogram(histogramData, dataKey){
     try{
         var dataArrays = {
             timestamps: []
         };
         for (const bucket of histogramData.aggregations.Timestamp.buckets) {
             dataArrays.timestamps.push(bucket.key_as_string);
-            for (const timestampBucket of bucket.HTTPResponse.buckets) {
+            for (const timestampBucket of bucket[dataKey].buckets) {
                 if(!dataArrays[timestampBucket.key]){
                     dataArrays[timestampBucket.key] = new Array(dataArrays.timestamps.length - 1).fill(0);
                 }else{
@@ -245,28 +316,23 @@ async function queryElasticsearch(query){
     return;
 }
 
-async function loadQueries(directoryPath, runtimeObject) {
-  // Initialize queries object
-  var theseQueries = {};
-
+async function loadQueries(directoryPath) {
   try {
-    // Read files from the directory
     const files = await fs.promises.readdir(directoryPath);
 
-    // Read and process each file
-    for (const file of files) {
+    const promises = files.map(async (file) => {
       const filePath = path.join(directoryPath, file);
-      const fileName = file.split('.')[0]; // Get the first part of the file name
+      const fileName = file.split('.')[0];
 
-      // Read file content
       const content = await readFile(filePath);
+      return [fileName, JSON.parse(content)];
+    });
 
-      // Add file content to the queries object
-      theseQueries[fileName] = JSON.parse(content);
-    }
-    return theseQueries;
+    const results = await Promise.all(promises);
+    return Object.fromEntries(results);
   } catch (error) {
     console.error('Error loading queries:', error);
+    return null; // Or appropriate error handling
   }
 }
 

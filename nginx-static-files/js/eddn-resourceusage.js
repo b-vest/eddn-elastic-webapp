@@ -1,3 +1,10 @@
+  const INTERVAL_TIME = 10000; // 10 seconds
+
+  let ctxCPU = document.getElementById('canvasSystemCPU');
+  let cpuChart;
+
+  let ctxLoad = document.getElementById('canvasSystemLoad');
+  let loadChart;
 socket.addEventListener('open', function (event) {
   console.log('WebSocket connected');
   // You can send data to the server using socket.send()
@@ -14,8 +21,17 @@ socket.addEventListener('message', function (event) {
   const serverData = JSON.parse(event.data);
   console.log(serverData);
   if(serverData.function === "rendrSystemStats"){
-    renderSystemLoadHistogram(serverData.systemMetrics.systemLoad.aggregations);
-    renderSystemCPUHistogram(serverData.systemMetrics.systemCPU.aggregations);
+    if(!cpuChart){
+      renderSystemCPUHistogram(serverData.systemMetrics.systemCPU);
+    }else{
+      updateSystemCPUHistogram(serverData.systemMetrics.systemCPU);
+    }
+    if(!loadChart){
+      renderSystemLoadHistogram(serverData.systemMetrics.systemLoad);
+    }else{
+      updateSystemLoadHistogram(serverData.systemMetrics.systemLoad);
+    }
+
   }
 });
 
@@ -31,64 +47,13 @@ function randomRgbColor() {
     return [r,g,b];
 
 }
-function renderSystemCPUHistogram(systemCPUData){
-  const ctx = document.getElementById('canvasSystemCPU');
-  const systemCPU = [];
-  const ioCPU = [];
-  const timeStamps = []
-  for (const bucket of systemCPUData.Timestamp.buckets) {
-    const dateObject = new Date(bucket.key_as_string);
-    var dateHours = dateObject.getHours();
-    var dateMinutes = dateObject.getMinutes();
-    var dateSeconds = dateObject.getSeconds();
-    if (dateMinutes <= 9) {
-      dateMinutes = "0" + dateMinutes;
-    }
-    if (dateHours <= 9) {
-      dateHours = "0" + dateSeconds;
-    }
-    if (dateSeconds <= 9) {
-      dateSeconds = "0" + dateSeconds;
-    }
-    const thisTimesatamp = dateHours + ":" + dateMinutes + ":" + dateSeconds;
-    console.log(thisTimesatamp);
-    timeStamps.push(thisTimesatamp);
-    systemCPU.push(bucket.TotalCPU.value);
-    ioCPU.push(bucket.IOWaitCPU.value)
-  }
+function renderSystemCPUHistogram(trafficArrays){
+  trafficArrays.labels = trafficArrays.labels.map(convertToLocalTime);
 
-      const data = {
-    labels: timeStamps,
-    datasets: [{
-        label: 'System CPU',
-        data: systemCPU,
-        fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1,
-        pointRadius: 0,
-        borderWidth: 2
-      },
-      {
-        label: 'IOWait CPU',
-        data: ioCPU,
-        fill: false,
-        borderColor: 'rgb(175, 92, 92)',
-        tension: 0.1,
-        pointRadius: 0,
-        borderWidth: 2,
-      }
-    ]
-  };
-
-
-
-  const config = {
-    type: 'line',
-  };
   console.log("Creating Chart");
-  new Chart(ctx, {
+  cpuChart = new Chart(ctxCPU, {
     type: 'line',
-    data: data,
+    data: trafficArrays,
     options: {
       scales: {
         xAxes: [{
@@ -101,7 +66,10 @@ function renderSystemCPUHistogram(systemCPUData){
             minRotation: 0
           }
         }]
-      }
+      },
+        animation: {
+            duration: 0 // Disable animations
+        }
     }
   });
 
@@ -109,79 +77,13 @@ function renderSystemCPUHistogram(systemCPUData){
 
 
 
-function renderSystemLoadHistogram(systemLoadData){
-  const ctx = document.getElementById('canvasSystemLoad');
+function renderSystemLoadHistogram(trafficArrays){
+  trafficArrays.labels = trafficArrays.labels.map(convertToLocalTime);
 
-  const systemLoad1 = [];
-  const systemLoad2 = [];
-  const systemLoad3 = [];
-  const timeStamps = [];
-
-  for (const bucket of systemLoadData.Timestamp.buckets) {
-    //console.log(bucket);
-    const dateObject = new Date(bucket.key_as_string);
-    var dateHours = dateObject.getHours();
-    var dateMinutes = dateObject.getMinutes();
-    var dateSeconds = dateObject.getSeconds();
-    if (dateMinutes <= 9) {
-      dateMinutes = "0" + dateMinutes;
-    }
-    if (dateHours <= 9) {
-      dateHours = "0" + dateSeconds;
-    }
-    if (dateSeconds <= 9) {
-      dateSeconds = "0" + dateSeconds;
-    }
-    const thisTimesatamp = dateHours + ":" + dateMinutes + ":" + dateSeconds;
-
-    timeStamps.push(thisTimesatamp);
-    systemLoad1.push(bucket.Load1.value);
-    systemLoad2.push(bucket.Load5.value);
-    systemLoad3.push(bucket.Load15.value)
-  }
-
-  //console.log(systemLoad1);
-    const data = {
-    labels: timeStamps,
-    datasets: [{
-        label: 'Load 1 Minute',
-        data: systemLoad1,
-        fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1,
-        pointRadius: 0,
-        borderWidth: 2
-      },
-      {
-        label: 'Load 5 Minutes',
-        data: systemLoad2,
-        fill: false,
-        borderColor: 'rgb(175, 92, 92)',
-        tension: 0.1,
-        pointRadius: 0,
-        borderWidth: 2,
-      }, 
-      {
-        label: 'Load 15 Minutes',
-        data: systemLoad3,
-        fill: false,
-        borderColor: 'rgb(175, 92, 92)',
-        tension: 0.1,
-        pointRadius: 0,
-        borderWidth: 2,
-      }
-    ]
-  };
-
-
-
-  const config = {
-    type: 'line',
-  };
   console.log("Creating Chart");
-  new Chart(ctx, {
+  loadChart = new Chart(ctxLoad, {
     type: 'line',
-    data: data,
+    data: trafficArrays,
     options: {
       scales: {
         xAxes: [{
@@ -194,9 +96,68 @@ function renderSystemLoadHistogram(systemLoadData){
             minRotation: 0
           }
         }]
-      }
+      },
+        animation: {
+            duration: 0 // Disable animations
+        }
     }
   });
 
 }
 
+function updateSystemCPUHistogram(preprocessedData){
+    // First clear old data
+    cpuChart.data.labels.length = 0;
+    cpuChart.data.datasets.length = 0;
+    preprocessedData.labels = preprocessedData.labels.map(convertToLocalTime);
+    // Then add new data 
+    preprocessedData.labels.forEach(label => cpuChart.data.labels.push(label));
+    preprocessedData.datasets.forEach(dataset => cpuChart.data.datasets.push(dataset));
+    
+    // Lastly, update the chart
+    cpuChart.update();
+}
+
+function updateSystemLoadHistogram(preprocessedData){
+    // First clear old data
+    loadChart.data.labels.length = 0;
+    loadChart.data.datasets.length = 0;
+    preprocessedData.labels = preprocessedData.labels.map(convertToLocalTime);
+    // Then add new data 
+    preprocessedData.labels.forEach(label => loadChart.data.labels.push(label));
+    preprocessedData.datasets.forEach(dataset => loadChart.data.datasets.push(dataset));
+    
+    // Lastly, update the chart
+    loadChart.update();
+}
+
+function convertToLocalTime(utcTimestamp) {
+  console.log("Converting Time");
+  const timePieces = new Date(utcTimestamp).toLocaleString();
+  const timeArray = timePieces.split(",");
+  return timeArray[1];
+}
+
+
+
+function sendSystemResourceData() {
+  const sendToServer = {
+    function: "sendSystemStats"
+  }
+  socket.send(JSON.stringify(sendToServer));
+}
+
+
+const button = document.getElementById("updateButton");
+
+button.addEventListener("click", function() {
+  if (button.innerText === "Enable Realtime Updates") {
+    button.classList.replace("btn-primary", "btn-success");
+    button.innerText = "Realtime Updates Running";
+    intervalTimer = setInterval(sendSystemResourceData, INTERVAL_TIME);
+  } else {
+    button.classList.replace("btn-success", "btn-primary");
+    button.innerText = "Enable Realtime Updates";
+    clearInterval(intervalTimer);
+  }
+});
