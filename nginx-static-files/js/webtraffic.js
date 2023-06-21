@@ -14,7 +14,7 @@ socket.addEventListener('message', function (event) {
       renderHTTPClientTable(serverData.httpClientTable);
     }else{
       updateHTTPResponseChart(serverData.httpResponseMetrics);
-      renderHTTPResponseChart(serverData.httpResponseMetrics);
+      renderHTTPClientTable(serverData.httpClientTable);
 
     }
   }
