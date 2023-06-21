@@ -13,7 +13,6 @@
   "fields": [
   
     "http.response.status_code",
-    "source.geo*",
     "@timestamp",
     "source.ip",
     "user_agent.name",
