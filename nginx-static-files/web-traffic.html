@@ -66,7 +66,7 @@
 					</div>
 					<div class="row">
 
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-6" >
 							<div class="card">
 								<div class="card-body">
 									<h3>HTTP Response Codes</h3>
@@ -201,6 +201,28 @@ async function processHistogram(histogramData) {
 								</div>
 							</div>
 						</div>
+                                                <div class="col-12 col-lg-6" style="max-height:600px; overflow:auto;">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h3>HTTP Client Information</h3>
+                                </div>
+                                <div>
+                                    <table class="table" id="webTrafficTable">
+                                        <thead>
+                                            <tr><th>Times</th><th>Client IP</th><th>Browser</th><th>Version</th><th>Response</th><th>OS</th></tr>
+                                        </thead>
+                                        <tbody id="webTrafficTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="card-body">
+                                    <br>
+                                    <h2>How Does This Work?</h2>
+                                    <br>
+                                    <h3>Websocket Server Side</h3>
+                                </div>
+                            </div>
+                        </div>
 					</div>
 				</div>
 			</main>

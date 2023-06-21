@@ -62,11 +62,27 @@
 
 									<div style="display: flex; align-items: center; justify-content: space-between;">					
 					<h1 class="h3 mb-3"><strong>EDDN WebApp System Resource Usage</strong></h1>
+					<form>
+  <div class="form-group">
+    <label for="timeDropdown">Select Time:</label>
+    <select class="form-control" id="timeDropdown">
+      <option value="5M">5 minutes</option>
+      <option value="30M">30 minutes</option>
+      <option value="1H">1 hour</option>
+      <option value="6H">6 hour</option>
+      <option value="12H">12 hour</option>
+      <option value="24H">24 hour</option>
+    </select>
+  </div>
+</form>
+
 					<button id="updateButton" type="button" class="btn btn-primary">Enable Realtime Updates</button>
+
 					</div>
+					<br>
 					<div class="row">
 						<div class="col-6">
-							<h3>System Load</h3>
+							<h3>System Load 24 Hours</h3>
 							<canvas id="canvasSystemLoad"></canvas>
 						</div>
 						<div class="col-6">

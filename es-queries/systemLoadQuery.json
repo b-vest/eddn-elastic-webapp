@@ -15,7 +15,7 @@
   "query": { 
     "bool": {
       "filter": [
-        { "range": { "@timestamp": { "format": "strict_date_optional_time", "gte": "now-1h/h", "lte": "now/h" } } }
+        { "range": { "@timestamp": { "format": "strict_date_optional_time", "gte": "now-24h/h", "lte": "now/h" } } }
     ]
   }
 }

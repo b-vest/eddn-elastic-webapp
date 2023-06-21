@@ -88,7 +88,8 @@ ws.on('message', (message) => {
     case 'sendWebTrafficData':
       sendObject = {
         function: 'renderWebTrafficmetrics',
-        httpResponseMetrics: runtimeObject.httpResponseHistogram
+        httpResponseMetrics: runtimeObject.httpResponseHistogram,
+        httpClientTable: runtimeObject.filebeatResponseTable
       };
       break;
     default:
@@ -151,14 +152,16 @@ async function getRawData(body,size){
 async function fetchAndStore() {
   runtimeObject.queries = await loadQueries(directoryPath);
 
-  const [healthStatus, rawData, starMapRawData, starTypeBarChart, rawResponseData, systemCPURaw, systemLoadRaw] = await Promise.all([
+  const [healthStatus, rawData, starMapRawData, starTypeBarChart, rawResponseData, systemCPURaw, systemLoadRaw, filebeatResponseTable] = await Promise.all([
     getClusterHealth(),
     getRawData("", 100),
     queryElasticsearch(runtimeObject.queries.starMapQuery),
     queryElasticsearch(runtimeObject.queries.getStarTypeCount),
     queryElasticsearch(runtimeObject.queries.httpResponseHistogram),
     queryElasticsearch(runtimeObject.queries.systemCPUQuery),
-    queryElasticsearch(runtimeObject.queries.systemLoadQuery)
+    queryElasticsearch(runtimeObject.queries.systemLoadQuery),
+    queryElasticsearch(runtimeObject.queries.filebeatResponseTableQuery)
+
 
   ]);
 
@@ -174,6 +177,24 @@ async function fetchAndStore() {
 
   runtimeObject.httpResponseHistogram = await processDocCountHistogram(rawResponseData, "HTTPResponse");
   runtimeObject.eddn2d.eventLineHistogram = await queryElasticsearch(runtimeObject.queries.getEventLineGraph);
+
+  runtimeObject.filebeatResponseTable = await prrocessNonAggregateReturn(filebeatResponseTable);
+
+}
+
+//This is for direct queries that do nto use aggregation.
+//Sometimes this is simpler than trygin to pull apart
+//items nested deep in an aggregate
+function prrocessNonAggregateReturn(rawData){
+  const processedData = [];
+  for (const hit of rawData.hits.hits) {
+    const thisDataset = []
+    for (const hitKey in hit.fields) {
+      thisDataset.push(hit.fields[hitKey][0]);
+    }
+    processedData.push(thisDataset);
+  }
+  return processedData;
 }
 
 

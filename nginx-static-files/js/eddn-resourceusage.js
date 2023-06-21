@@ -161,3 +161,11 @@ button.addEventListener("click", function() {
     clearInterval(intervalTimer);
   }
 });
+
+  const dropdown = document.getElementById("timeDropdown");
+
+  dropdown.addEventListener("change", function() {
+    const selectedValue = dropdown.value;
+    console.log("Selected value:", selectedValue);
+    // Perform any desired actions based on the selected value
+  });

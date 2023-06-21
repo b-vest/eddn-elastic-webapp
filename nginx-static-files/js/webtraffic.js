@@ -11,11 +11,39 @@ socket.addEventListener('message', function (event) {
   if(serverData.function === "renderWebTrafficmetrics"){
     if(!ctx){
       renderHTTPResponseChart(serverData.httpResponseMetrics);
+      renderHTTPClientTable(serverData.httpClientTable);
     }else{
       updateHTTPResponseChart(serverData.httpResponseMetrics);
     }
   }
 });
+
+
+function renderHTTPClientTable(preprocessedData){
+  const table = document.getElementById('webTrafficTableBody');
+
+  // Clear existing table rows
+  table.innerHTML = '';
+
+  // Iterate over each row of data
+  preprocessedData.forEach((row) => {
+    // Create a new row element
+    const newRow = table.insertRow();
+
+    // Iterate over each value in the row array and create a cell for it
+    row.forEach((value, index) => {
+      const newCell = newRow.insertCell();
+      if (index === 0) {
+        newCell.textContent = convertToLocalTime(value);
+      }else{
+      newCell.textContent = value;
+      }
+    });
+  });
+
+}
+
+
 
 function updateHTTPResponseChart(preprocessedData){
     // First clear old data
